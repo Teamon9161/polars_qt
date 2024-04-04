@@ -1,6 +1,6 @@
 # polars_qt
 
-Add a qt namespace for polars.
+Useful Quant expressions for polars implemented by polars plugin.
 
 Currently :
 
@@ -64,3 +64,8 @@ shape: (5, 1)
 └─────┘
 ```
 
+适用于金融量化领域的polars表达式扩展，使用polars plugin实现。
+
+目前支持：
+* 滚动排序
+* if_then表达式
