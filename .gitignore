@@ -1,0 +1,8 @@
+*.so
+*.pyc
+*.pyd
+*.lock
+
+.venv/
+dist/
+target/
