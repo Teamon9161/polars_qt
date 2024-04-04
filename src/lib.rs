@@ -1,3 +1,4 @@
+mod if_then;
 mod rolling_rank;
 
 use pyo3::types::PyModule;

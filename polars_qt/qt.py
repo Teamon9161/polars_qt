@@ -9,3 +9,5 @@ class ExprQuantExtend:
     def rolling_rank(self, window, min_periods=None, pct=False, rev=False) -> pl.Expr:
         return rolling_rank(self.expr, window=window, min_periods=min_periods, pct=pct, rev=rev)
     
+    def if_then(self, flag, then):
+        return if_then(flag, then, self.expr)
