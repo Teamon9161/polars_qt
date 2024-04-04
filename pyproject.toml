@@ -23,4 +23,5 @@ dev-dependencies = [
     "maturin>=1.5.1",
     "pip>=24.0",
     "ruff>=0.3.5",
+    "spyder-kernels>=2.5.1",
 ]

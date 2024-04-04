@@ -21,6 +21,7 @@ pre-commit: .venv
 test: .venv
 	.venv/bin/python -m pytest tests
 
-dev: maturin develop
+dev: 
+	maturin develop
 
 

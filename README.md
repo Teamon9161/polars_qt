@@ -4,7 +4,7 @@ Add a qt namespace for polars.
 
 Currently :
 
-* a rolling_rank function 
+* A rolling_rank expression
 
 * A if-then expression.
 
