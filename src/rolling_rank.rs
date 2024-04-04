@@ -50,8 +50,8 @@ where
         .zip(start_iter)
         .enumerate()
         .map(|(end, (v, start)): (usize, (Option<T::Native>, usize))| {
-            let mut n_repeat = 1; // 当前值的重复次数
-            let mut rank = 1.; // 先假设为第一名，每当有元素比他更小，排名就加1
+            let mut n_repeat = 1; // repeat count of the current value
+            let mut rank = 1.; // assume that the first element is the smallest, the rank goes up if we find a smaller element
             if let Some(v) = v {
                 n += 1;
                 for i in start..end {
@@ -70,7 +70,7 @@ where
             let out: f64;
             if n >= min_periods {
                 let res = if !rev {
-                    rank + 0.5 * (n_repeat - 1) as f64 // 对于重复值的method: average
+                    rank + 0.5 * (n_repeat - 1) as f64 // method for repeated values: average
                 } else {
                     (n + 1) as f64 - rank - 0.5 * (n_repeat - 1) as f64
                 };
