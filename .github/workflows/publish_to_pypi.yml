@@ -43,7 +43,7 @@ jobs:
       - uses: mozilla-actions/sccache-action@v0.0.3
       - run: make .venv
       - run: |
-          source venv/bin/activate
+          source .venv/bin/activate
           make pre-commit
           make install
           make test
