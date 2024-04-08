@@ -65,7 +65,7 @@ def calc_future_ret(
     signal = parse_into_expr(signal).cast(pl.Float64)
     pos = signal.shift(fill_value=0) if is_signal else signal
     base_config = {
-        "init_cash": init_cash,
+        "init_cash": int(init_cash),
         "multiplier": multiplier,
         "leverage": leverage,
         "c_rate": c_rate,
