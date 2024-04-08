@@ -42,9 +42,11 @@ jobs:
         run: rustup show
       - uses: mozilla-actions/sccache-action@v0.0.3
       - run: make .venv
-      - run: make pre-commit
-      - run: make install
-      - run: make test
+      - run: |
+          source venv/bin/activate
+          make pre-commit
+          make install
+          make test
 
   linux:
     runs-on: ubuntu-latest

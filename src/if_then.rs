@@ -13,7 +13,7 @@ fn if_then(inputs: &[Series]) -> PolarsResult<Series> {
     if cond.len() != 1 {
         return Err(PolarsError::InvalidOperation(
             "if_then expects a single boolean value".into(),
-        ))
+        ));
     };
     let cond = cond.get(0).unwrap();
     if cond {

@@ -1,3 +1,5 @@
+#[cfg(feature = "equity")]
+mod equity;
 mod if_then;
 mod rolling_rank;
 

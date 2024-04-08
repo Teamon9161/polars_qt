@@ -4,7 +4,11 @@
 *.lock
 
 .venv/
+
+# cache
 .ruff_cache/
 .pytest_cache/
+**/__pycache__/
+
 dist/
 target/

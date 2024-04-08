@@ -1,13 +1,15 @@
 # polars_qt
+[![PyPI](https://img.shields.io/pypi/v/polars_qt)](https://pypi.org/project/polars_qt)
 
 Useful Quant expressions for polars implemented by polars plugin.
 
 Currently :
 
-* A rolling_rank expression
+* Rolling_rank expression
 
-* A if-then expression.
+* If-Then expression.
 
+* Calculate return of future using strategy signal
 
 
 ### rolling_rank
@@ -64,8 +66,11 @@ shape: (5, 1)
 └─────┘
 ```
 
+
+
 适用于金融量化领域的polars表达式扩展，使用polars plugin实现。
 
 目前支持：
 * 滚动排序
 * if_then表达式
+* 利用策略信号回测收益
