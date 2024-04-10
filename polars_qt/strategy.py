@@ -16,6 +16,7 @@ def boll(
     min_periods: int | None=None,
     filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None=None,
     *,
+    rev=False,
     delay_open: bool=False,
     long_signal: float=1,
     short_signal: float=-1,
@@ -37,10 +38,13 @@ def boll(
         assert len(filters) == 4, "filters must be a list of 4 elements"
         filter_flag = True
         filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [*filters[2:], *filters[:2]] if rev else filters
         args.extend(filters)
     else:
         filter_flag = False
         args.extend([pl.lit(None)*4])
+    if rev:
+        long_signal, short_signal = short_signal, long_signal
     return register_plugin(
         args=args,
         kwargs={
@@ -54,3 +58,4 @@ def boll(
         symbol="boll",
         is_elementwise=False,
     )
+
