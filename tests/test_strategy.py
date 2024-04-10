@@ -24,7 +24,6 @@ def test_boll():
         # boll with fac_vol stop, take profit if close reaches 5 * fac_vol
         pl.col('close').qt.boll((4, 1, 5), fac_vol=pl.repeat(1, pl.col('close').len())).alias('s4'),
     ])
-    print(df.to_pandas())
     expect1 = pl.Series('s1', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, -1, -1, -1, 0, 0, 0, -1])
     assert_series_equal(df['s1'], expect1)
     expect2 = pl.Series('s2', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, 0, 0, 0, -1])
