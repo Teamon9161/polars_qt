@@ -10,12 +10,12 @@ def test_boll():
         'short_open_filter': [1] * 11 + [0, 0, 1, 1, 1] + [1] * 4,
     })
     df = df.with_columns([
-        pl.col('close').qt.boll((4, 1)).alias('s1'), # base boll
+        pl.col('close').qt.boll((4, 1), delay_open=False).alias('s1'), # base boll
         # boll with filters
         pl.col('close').qt.boll((4, 1), filters=[
             pl.col('close') > 0, False,  # long open, long stop
             'short_open_filter', False,  # short open, short stop
-        ]).alias('s2'),
+        ], delay_open=False).alias('s2'),
         # boll with filters and delay open
         pl.col('close').qt.boll((4, 1), filters=[
             pl.col('close') > 0, False,  # long open, long stop

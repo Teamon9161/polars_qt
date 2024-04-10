@@ -18,7 +18,7 @@ def boll(
     *,
     fac_vol: IntoExpr | None=None,
     rev=False,
-    delay_open: bool=False,
+    delay_open: bool=True,
     long_signal: float=1,
     short_signal: float=-1,
     close_signal: float=0,
