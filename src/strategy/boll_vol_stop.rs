@@ -46,20 +46,16 @@ macro_rules! boll_vol_stop_logic_impl {
                 let fac = ($fac.unwrap() - $middle.unwrap()) / $std.unwrap();
                 // == open condition
                 let mut open_flag = false;
-                if (fac >= $kwargs.params.1) $(&& $long_open.unwrap_or(true))? $(&& $long_open_cond)? {
+                if ($last_signal != $kwargs.long_signal) && (fac >= $kwargs.params.1) $(&& $long_open.unwrap_or(true))? $(&& $long_open_cond)? {
                     // long open
-                    if $last_signal != $kwargs.long_signal {
-                        // only update open_price when signal changes
-                        $open_price = $fac;
-                        $last_signal = $kwargs.long_signal;
-                    }
+                    // only update open_price when signal changes
+                    $open_price = $fac;
+                    $last_signal = $kwargs.long_signal;
                     open_flag = true;
-                } else if (fac <= -$kwargs.params.1) $(&& $short_open.unwrap_or(true))? $(&& $short_open_cond)? {
+                } else if ($last_signal != $kwargs.short_signal) && (fac <= -$kwargs.params.1) $(&& $short_open.unwrap_or(true))? $(&& $short_open_cond)? {
                     // short open
-                    if $last_signal != $kwargs.short_signal {
-                        $open_price = $fac;
-                        $last_signal = $kwargs.short_signal;
-                    }
+                    $open_price = $fac;
+                    $last_signal = $kwargs.short_signal;
                     open_flag = true;
                 }
                 // == stop condition

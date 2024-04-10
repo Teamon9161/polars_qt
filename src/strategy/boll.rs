@@ -46,11 +46,11 @@ macro_rules! boll_logic_impl {
                 let fac = ($fac.unwrap() - $middle.unwrap()) / $std.unwrap();
                 // == open condition
                 let mut open_flag = false;
-                if (fac >= $kwargs.params.1) $(&& $long_open.unwrap_or(true))? $(&& $long_open_cond)? {
+                if ($last_signal != $kwargs.long_signal) && (fac >= $kwargs.params.1) $(&& $long_open.unwrap_or(true))? $(&& $long_open_cond)? {
                     // long open
                     $last_signal = $kwargs.long_signal;
                     open_flag = true;
-                } else if (fac <= -$kwargs.params.1) $(&& $short_open.unwrap_or(true))? $(&& $short_open_cond)? {
+                } else if ($last_signal != $kwargs.short_signal) && (fac <= -$kwargs.params.1) $(&& $short_open.unwrap_or(true))? $(&& $short_open_cond)? {
                     // short open
                     $last_signal = $kwargs.short_signal;
                     open_flag = true;
@@ -60,13 +60,13 @@ macro_rules! boll_logic_impl {
                     // we can skip stop condition if trade is already close or open
                     if (($last_fac > $kwargs.params.2) && (fac <= $kwargs.params.2))
                         $(|| $long_stop.unwrap_or(false))?  // additional stop condition
-                        $(|| fac > $m3)?  // profit stop condition
+                        $(|| fac >= $m3)?  // profit stop condition
                     {
                         // long stop
                         $last_signal = $kwargs.close_signal;
                     } else if (($last_fac < -$kwargs.params.2) && (fac >= -$kwargs.params.2))
                         $(|| $short_stop.unwrap_or(false))?
-                        $(|| fac < -$m3)?  // profit stop condition
+                        $(|| fac <= -$m3)?  // profit stop condition
                     {
                         // short stop
                         $last_signal = $kwargs.close_signal;
