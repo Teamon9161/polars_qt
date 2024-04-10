@@ -3,6 +3,7 @@ from __future__ import annotations
 import polars as pl
 
 from .funcs import *
+from .strategy import boll
 
 
 @pl.api.register_expr_namespace("qt")
@@ -49,3 +50,25 @@ class ExprQuantExtend:
             commision_type=commision_type,
             contract_chg_signal=contract_chg_signal,
         )
+
+    def boll(
+        self,
+        params: tuple[int, float, float] | tuple[int, float] | int,
+        min_periods: int | None = None,
+        filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
+        *,
+        delay_open: bool = False,
+        long_signal: float = 1,
+        short_signal: float = -1,
+        close_signal: float = 0,
+    ) -> pl.Expr:
+        return boll(
+            self.expr,
+            params=params,
+            min_periods=min_periods,
+            filters=filters,
+            delay_open=delay_open,
+            long_signal=long_signal,
+            short_signal=short_signal,
+            close_signal=close_signal,
+    )

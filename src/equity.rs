@@ -45,10 +45,10 @@ fn calc_future_ret(inputs: &[Series], kwargs: FutureRetKwargs) -> PolarsResult<S
 }
 
 fn impl_calc_future_ret(
-    pos_se: &ChunkedArray<Float64Type>,
-    opening_cost_se: &ChunkedArray<Float64Type>,
-    closing_cost_se: &ChunkedArray<Float64Type>,
-    contract_chg_signal_se: Option<&ChunkedArray<BooleanType>>,
+    pos_se: &Float64Chunked,
+    opening_cost_se: &Float64Chunked,
+    closing_cost_se: &Float64Chunked,
+    contract_chg_signal_se: Option<&BooleanChunked>,
     kwargs: FutureRetKwargs,
 ) -> Float64Chunked {
     let mut cash = kwargs.init_cash as f64;

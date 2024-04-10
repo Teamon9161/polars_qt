@@ -1,7 +1,10 @@
-#[cfg(feature = "equity")]
-mod equity;
+
 mod if_then;
 mod rolling_rank;
+#[cfg(feature = "equity")]
+mod equity;
+#[cfg(feature = "strategy")]
+mod strategy;
 
 use pyo3::types::PyModule;
 use pyo3::{pymodule, PyResult, Python};
