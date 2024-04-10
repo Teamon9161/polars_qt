@@ -57,18 +57,43 @@ class ExprQuantExtend:
         min_periods: int | None = None,
         filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
         *,
+        fac_vol: IntoExpr | None=None,
+        rev=False,
         delay_open: bool = False,
         long_signal: float = 1,
         short_signal: float = -1,
         close_signal: float = 0,
     ) -> pl.Expr:
+        """
+        Bollinger Bands
+        fac: factor to calculate bollinger bands
+        params:
+            if fac_vol is None
+                params: window, open_width, close_width(default: 0.0), stop_width(default: None)
+            if we use fac_vol stop
+                params: window, open_width, close_width(default: 0.0), fac_vol_width
+                the last of the params will be parsed as fac_vol_width
+        min_periods: minimum periods to calculate bollinger bands
+        filters: long_open, long_stop, short_open, short_stop
+            for open condition, if filter is False, open behavior is disabled
+            for stop condition, if filter is True, return signal will be close_signal
+        fac_vol:
+            a expression to calculate fac_vol, if None, we will use the default bollinger bands
+        rev: reverse the long and short signal, filters will also be reversed automatically
+        delay_open: if open signal is blocked by filters, whether to delay the open signal when filters are True
+        """
         return boll(
             self.expr,
             params=params,
             min_periods=min_periods,
             filters=filters,
+            fac_vol=fac_vol,
+            rev=rev,
             delay_open=delay_open,
             long_signal=long_signal,
             short_signal=short_signal,
             close_signal=close_signal,
     )
+        
+    def boll_rev(self, *args, **kwargs):
+        return self.boll(*args, **kwargs, rev=True)

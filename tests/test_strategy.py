@@ -10,20 +10,27 @@ def test_boll():
         'short_open_filter': [1] * 11 + [0, 0, 1, 1, 1] + [1] * 4,
     })
     df = df.with_columns([
-        pl.col('close').qt.boll((4, 1)).alias('s1'),
+        pl.col('close').qt.boll((4, 1)).alias('s1'), # base boll
+        # boll with filters
         pl.col('close').qt.boll((4, 1), filters=[
             pl.col('close') > 0, False,  # long open, long stop
             'short_open_filter', False,  # short open, short stop
         ]).alias('s2'),
+        # boll with filters and delay open
         pl.col('close').qt.boll((4, 1), filters=[
             pl.col('close') > 0, False,  # long open, long stop
             'short_open_filter', False,  # short open, short stop
         ], delay_open=True).alias('s3'),
-
+        # boll with fac_vol stop, take profit if close reaches 5 * fac_vol
+        pl.col('close').qt.boll((4, 1, 5), fac_vol=pl.repeat(1, pl.col('close').len())).alias('s4'),
     ])
+    print(df.to_pandas())
     expect1 = pl.Series('s1', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, -1, -1, -1, 0, 0, 0, -1])
     assert_series_equal(df['s1'], expect1)
     expect2 = pl.Series('s2', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, 0, 0, 0, -1])
     assert_series_equal(df['s2'], expect2)
     expect3 = pl.Series('s3', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, -1, -1, -1, 0, 0, 0, -1])
     assert_series_equal(df['s3'], expect3)
+    expect3 = pl.Series('s4', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, 0, 0, -1, 0, 0, 0, -1])
+    assert_series_equal(df['s4'], expect3)
+test_boll()

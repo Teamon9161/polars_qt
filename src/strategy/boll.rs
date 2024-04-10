@@ -8,6 +8,7 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 struct BollKwargs {
+    // window, open_width, stop_width, take_profit_width
     params: (usize, f64, f64, Option<f64>),
     filter_flag: bool,
     delay_open: bool,
@@ -20,13 +21,13 @@ struct BollKwargs {
 fn boll(inputs: &[Series], kwargs: BollKwargs) -> PolarsResult<Series> {
     let fac = inputs[0].f64()?;
     let middle = inputs[1].f64()?;
-    let std = inputs[2].f64()?;
+    let std_ = inputs[2].f64()?;
     let filter = if kwargs.filter_flag {
         Some(StrategyFilter::from_inputs(inputs, (3, 4, 5, 6))?)
     } else {
         None
     };
-    Ok(impl_boll(fac, middle, std, filter, kwargs).into_series())
+    Ok(impl_boll(fac, middle, std_, filter, kwargs).into_series())
 }
 
 macro_rules! boll_logic_impl {
@@ -57,13 +58,13 @@ macro_rules! boll_logic_impl {
                 // == stop condition
                 if (!open_flag) && ($last_signal != $kwargs.close_signal) {
                     // we can skip stop condition if trade is already close or open
-                    if ($last_fac > $kwargs.params.2) && (fac <= $kwargs.params.2)
+                    if (($last_fac > $kwargs.params.2) && (fac <= $kwargs.params.2))
                         $(|| $long_stop.unwrap_or(false))?  // additional stop condition
                         $(|| fac > $m3)?  // profit stop condition
                     {
                         // long stop
                         $last_signal = $kwargs.close_signal;
-                    } else if ($last_fac < -$kwargs.params.2) && (fac >= -$kwargs.params.2)
+                    } else if (($last_fac < -$kwargs.params.2) && (fac >= -$kwargs.params.2))
                         $(|| $short_stop.unwrap_or(false))?
                         $(|| fac < -$m3)?  // profit stop condition
                     {
@@ -195,8 +196,6 @@ fn impl_boll(
                             last_signal, last_fac,
                             long_open=>last_fac < m,
                             short_open=>last_fac > -m,
-                            // long_open=>|last_fac| (last_fac < m),
-                            // short_open=>|last_fac| (last_fac > -m),
                         )
                     })
                     .collect_trusted()
