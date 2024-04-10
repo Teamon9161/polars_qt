@@ -18,6 +18,11 @@ pre-commit: .venv
 	ruff format polars_qt tests
 	# .venv/bin/mypy polars_qt tests
 
+format:
+	cargo fmt --all
+	cargo clippy --all-features
+	ruff check
+
 test: .venv
 	pytest tests
 

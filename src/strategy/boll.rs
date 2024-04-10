@@ -4,9 +4,8 @@ use pyo3_polars::derive::polars_expr;
 use pyo3_polars::export::polars_core::utils::CustomIterTools;
 // use polars::prelude::SeriesOpsTime;
 // use polars::prelude::arity::binary_elementwise;
-use serde::Deserialize;
 use itertools::izip;
-
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 struct BollKwargs {
@@ -36,8 +35,6 @@ impl<'a> StrategyFilter<'a> {
     }
 }
 
-
-
 #[polars_expr(output_type=Float64)]
 fn boll(inputs: &[Series], kwargs: BollKwargs) -> PolarsResult<Series> {
     let fac = inputs[0].f64()?;
@@ -51,15 +48,14 @@ fn boll(inputs: &[Series], kwargs: BollKwargs) -> PolarsResult<Series> {
     Ok(impl_boll(fac, middle, std, filter, kwargs).into_series())
 }
 
-
 macro_rules! boll_logic_impl {
-    (   
-        $kwargs: expr, 
+    (
+        $kwargs: expr,
         $fac: expr, $middle: expr, $std: expr,
         $last_signal: expr, $last_fac: expr,
         $(filters=>($long_open: expr, $long_stop: expr, $short_open: expr, $short_stop: expr),)?
-        long_open=>$long_open_cond: expr, 
-        short_open=>$short_open_cond: expr,
+        $(long_open=>$long_open_cond: expr,)?
+        $(short_open=>$short_open_cond: expr,)?
         $(profit_p=>$m3: expr)?
         $(,)?
     ) => {
@@ -68,11 +64,11 @@ macro_rules! boll_logic_impl {
                 let fac = ($fac.unwrap() - $middle.unwrap()) / $std.unwrap();
                 // == open condition
                 let mut open_flag = false;
-                if $($long_open.unwrap_or(true) &&)? $long_open_cond($last_fac, fac) {
+                if (fac >= $kwargs.params.1) $(&& $long_open.unwrap_or(true))? $(&& $long_open_cond)? {
                     // long open
                     $last_signal = $kwargs.long_signal;
                     open_flag = true;
-                } else if $($short_open.unwrap_or(true) &&)? $short_open_cond($last_fac, fac) {
+                } else if (fac <= -$kwargs.params.1) $(&& $short_open.unwrap_or(true))? $(&& $short_open_cond)? {
                     // short open
                     $last_signal = $kwargs.short_signal;
                     open_flag = true;
@@ -80,14 +76,14 @@ macro_rules! boll_logic_impl {
                 // == stop condition
                 if (!open_flag) && ($last_signal != $kwargs.close_signal) {
                     // we can skip stop condition if trade is already close or open
-                    if ($last_fac > $kwargs.params.2) && (fac <= $kwargs.params.2) 
+                    if ($last_fac > $kwargs.params.2) && (fac <= $kwargs.params.2)
                         $(|| $long_stop.unwrap_or(false))?  // additional stop condition
                         $(|| fac > $m3)?  // profit stop condition
                     {
                         // long stop
                         $last_signal = $kwargs.close_signal;
-                    } else if ($last_fac < -$kwargs.params.2) && (fac >= -$kwargs.params.2) 
-                        $(|| $short_stop.unwrap_or(false))? 
+                    } else if ($last_fac < -$kwargs.params.2) && (fac >= -$kwargs.params.2)
+                        $(|| $short_stop.unwrap_or(false))?
                         $(|| fac < -$m3)?  // profit stop condition
                     {
                         // short stop
@@ -102,6 +98,7 @@ macro_rules! boll_logic_impl {
     };
 }
 
+#[allow(clippy::collapsible_else_if)]
 fn impl_boll(
     fac_arr: &Float64Chunked,
     middle_arr: &Float64Chunked,
@@ -109,63 +106,71 @@ fn impl_boll(
     filter: Option<StrategyFilter>,
     kwargs: BollKwargs,
 ) -> Float64Chunked {
-    let m = kwargs.params.1 as f64;
+    let m = kwargs.params.1;
     let mut last_signal = kwargs.close_signal;
     let mut last_fac = 0.;
     if let Some(filter) = filter {
         let zip_ = izip!(
-            fac_arr, middle_arr, std_arr, 
-            filter.long_open, filter.long_stop, 
-            filter.short_open, filter.short_stop
+            fac_arr,
+            middle_arr,
+            std_arr,
+            filter.long_open,
+            filter.long_stop,
+            filter.short_open,
+            filter.short_stop
         );
         if kwargs.delay_open {
             if let Some(m3) = kwargs.params.3 {
-                zip_.map(|(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        filters=>(long_open, long_stop, short_open, short_stop),
-                        long_open=>|_last_fac, fac| fac >= m, 
-                        short_open=>|_last_fac, fac| fac <= -m,
-                        profit_p=>m3,
-                    )
-                })
+                zip_.map(
+                    |(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            filters=>(long_open, long_stop, short_open, short_stop),
+                            profit_p=>m3,
+                        )
+                    },
+                )
                 .collect_trusted()
             } else {
-                zip_.map(|(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        filters=>(long_open, long_stop, short_open, short_stop),
-                        long_open=>|_last_fac, fac| fac >= m, 
-                        short_open=>|_last_fac, fac| fac <= -m,
-                    )
-                })
+                zip_.map(
+                    |(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            filters=>(long_open, long_stop, short_open, short_stop),
+                        )
+                    },
+                )
                 .collect_trusted()
             }
         } else {
             if let Some(m3) = kwargs.params.3 {
-                zip_.map(|(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        filters=>(long_open, long_stop, short_open, short_stop),
-                        long_open=>|last_fac, fac| (last_fac < m) && (fac >= m), 
-                        short_open=>|last_fac, fac| (last_fac > -m) && (fac <= -m),
-                        profit_p=>m3,
-                    )
-                })
+                zip_.map(
+                    |(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            filters=>(long_open, long_stop, short_open, short_stop),
+                            long_open=>last_fac < m,
+                            short_open=>last_fac > -m,
+                            profit_p=>m3,
+                        )
+                    },
+                )
                 .collect_trusted()
             } else {
-                zip_.map(|(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        filters=>(long_open, long_stop, short_open, short_stop),
-                        long_open=>|last_fac, fac| (last_fac < m) && (fac >= m), 
-                        short_open=>|last_fac, fac| (last_fac > -m) && (fac <= -m),
-                    )
-                })
+                zip_.map(
+                    |(fac, middle, std, long_open, long_stop, short_open, short_stop)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            filters=>(long_open, long_stop, short_open, short_stop),
+                            long_open=>last_fac < m,
+                            short_open=>last_fac > -m,
+                        )
+                    },
+                )
                 .collect_trusted()
             }
         }
@@ -173,53 +178,47 @@ fn impl_boll(
         if kwargs.delay_open {
             if let Some(m3) = kwargs.params.3 {
                 izip!(fac_arr, middle_arr, std_arr)
-                .map(|(fac, middle, std)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        long_open=>|_last_fac, fac| fac >= m, 
-                        short_open=>|_last_fac, fac| fac <= -m,
-                        profit_p=>m3,
-                    )
-                })
-                .collect_trusted()
+                    .map(|(fac, middle, std)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            profit_p=>m3,
+                        )
+                    })
+                    .collect_trusted()
             } else {
                 izip!(fac_arr, middle_arr, std_arr)
-                .map(|(fac, middle, std)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        long_open=>|_last_fac, fac| fac >= m, 
-                        short_open=>|_last_fac, fac| fac <= -m,
-                    )
-                })
-                .collect_trusted()
+                    .map(|(fac, middle, std)| {
+                        boll_logic_impl!(kwargs, fac, middle, std, last_signal, last_fac,)
+                    })
+                    .collect_trusted()
             }
-            
         } else {
             if let Some(m3) = kwargs.params.3 {
                 izip!(fac_arr, middle_arr, std_arr)
-                .map(|(fac, middle, std)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        long_open=>|last_fac, fac| (last_fac < m) && (fac >= m), 
-                        short_open=>|last_fac, fac| (last_fac > -m) && (fac <= -m),
-                        profit_p=>m3,
-                    )
-                })
-                .collect_trusted()
+                    .map(|(fac, middle, std)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            long_open=>last_fac < m,
+                            short_open=>last_fac > -m,
+                            profit_p=>m3,
+                        )
+                    })
+                    .collect_trusted()
             } else {
                 izip!(fac_arr, middle_arr, std_arr)
-                .map(|(fac, middle, std)| {
-                    boll_logic_impl!( 
-                        kwargs, fac, middle, std,
-                        last_signal, last_fac,
-                        long_open=>|last_fac, fac| (last_fac < m) && (fac >= m), 
-                        short_open=>|last_fac, fac| (last_fac > -m) && (fac <= -m),
-                    )
-                })
-                .collect_trusted()
+                    .map(|(fac, middle, std)| {
+                        boll_logic_impl!(
+                            kwargs, fac, middle, std,
+                            last_signal, last_fac,
+                            long_open=>last_fac < m,
+                            short_open=>last_fac > -m,
+                            // long_open=>|last_fac| (last_fac < m),
+                            // short_open=>|last_fac| (last_fac > -m),
+                        )
+                    })
+                    .collect_trusted()
             }
         }
     }

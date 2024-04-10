@@ -1,8 +1,7 @@
-
-mod if_then;
-mod rolling_rank;
 #[cfg(feature = "equity")]
 mod equity;
+mod if_then;
+mod rolling_rank;
 #[cfg(feature = "strategy")]
 mod strategy;
 
