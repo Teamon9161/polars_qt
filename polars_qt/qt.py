@@ -94,6 +94,6 @@ class ExprQuantExtend:
             short_signal=short_signal,
             close_signal=close_signal,
     )
-        
+
     def boll_rev(self, *args, **kwargs):
         return self.boll(*args, **kwargs, rev=True)
