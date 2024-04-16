@@ -89,3 +89,25 @@ def boll(
         is_elementwise=False,
     )
 
+def martingale(
+    close: IntoExpr,
+    step: int,
+    init_pos: float,
+    win_p_addup: float,
+    take_profit: float,
+    b: float,
+) -> pl.Expr:
+    close = parse_into_expr(close)
+    kwargs = {
+        'step': step,
+        'init_pos': init_pos,
+        'win_p_addup': win_p_addup,
+        'take_profit': take_profit,
+        'b': b
+    }
+    return register_plugin(
+        args=[close],
+        kwargs=kwargs,
+        symbol='martingale',
+        is_elementwise=False,
+    )
