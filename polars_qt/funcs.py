@@ -57,7 +57,7 @@ def calc_future_ret(
     ticksize: float = 0,
     c_rate: float = 3e-4,
     blowup: bool = False,
-    commision_type: str = "percent",
+    commision_type: str = "Percent",
     contract_chg_signal: IntoExpr | None = None,
 ) -> pl.Expr:
     open = parse_into_expr(open).cast(pl.Float64)
@@ -72,7 +72,7 @@ def calc_future_ret(
         "blowup": blowup,
         "commision_type": commision_type,
     }
-    assert commision_type in ["percent", "absolute"]
+    assert commision_type in ["Percent", "Absolute"]
     from numbers import Number
 
     if isinstance(slippage, Number):
