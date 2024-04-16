@@ -28,6 +28,6 @@ features = ["pl"]
 
 [dependencies.tea_strategy]
 git = "https://github.com/Teamon9161/tea_strategy.git"
-rev = "bbce66f"
+rev = "66d06a3"
 default-features = false
 features = ['pl']
