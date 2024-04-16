@@ -21,6 +21,7 @@ pre-commit: .venv
 format:
 	cargo fmt --all
 	cargo clippy --all-features
+	ruff check --fix
 	ruff check
 
 test: .venv
