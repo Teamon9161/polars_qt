@@ -1,6 +1,6 @@
 [package]
 name = "polars-qt"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 
 [lib]
@@ -28,6 +28,6 @@ features = ["pl"]
 
 [dependencies.tea_strategy]
 git = "https://github.com/Teamon9161/tea_strategy.git"
-rev = "a14b0dc"
+rev = "0424c3d"
 default-features = false
 features = ['pl']
