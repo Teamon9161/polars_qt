@@ -19,15 +19,16 @@ pyo3-polars = { version = "0.12.0", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 polars = { version = "0.38", default-features = false, features=["rolling_window", "temporal"] }
 
-[dependencies.tea-core]
-git = "https://github.com/Teamon9161/tevec.git"
-rev = "4e89266"
-default-features = false
-features = ["pl"]
+# [dependencies.tevec]
+# git = "https://github.com/Teamon9161/tevec.git"
+# # rev = "4e89266"
+# branch = "master"
+# default-features = false
+# features = ["pl"]
 
 
 [dependencies.tea_strategy]
 git = "https://github.com/Teamon9161/tea_strategy.git"
-rev = "0424c3d"
+rev = "0c1e2fe"
 default-features = false
 features = ['pl']
