@@ -1,3 +1,4 @@
+mod compose;
 #[cfg(feature = "equity")]
 mod equity;
 mod if_then;

@@ -6,28 +6,6 @@ use pyo3_polars::derive::polars_expr;
 use tea_strategy::equity;
 use tea_strategy::equity::{FutureRetKwargs, FutureRetSpreadKwargs};
 
-// #[derive(Deserialize)]
-// struct FutureRetKwargs {
-//     init_cash: usize,
-//     multiplier: f64,
-//     leverage: f64,
-//     slippage: f64,
-//     ticksize: f64,
-//     c_rate: f64,
-//     blowup: bool,
-//     commision_type: String,
-// }
-
-// #[derive(Deserialize)]
-// struct FutureRetSpreadKwargs {
-//     init_cash: usize,
-//     multiplier: f64,
-//     leverage: f64,
-//     c_rate: f64,
-//     blowup: bool,
-//     commision_type: String,
-// }
-
 #[polars_expr(output_type=Float64)]
 fn calc_future_ret(inputs: &[Series], kwargs: FutureRetKwargs) -> PolarsResult<Series> {
     let (pos, opening_cost, closing_cost) = (&inputs[0], &inputs[1], &inputs[2]);

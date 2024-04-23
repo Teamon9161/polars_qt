@@ -43,6 +43,15 @@ def if_then(flag_expr: IntoExpr, expr1: IntoExpr, expr2: IntoExpr) -> pl.Expr:
         is_elementwise=False,
     )
 
+def compose_by(expr: IntoExpr, by: IntoExpr) -> pl.Expr:
+    expr = parse_into_expr(expr).diff()
+    by = parse_into_expr(by)
+    return register_plugin(
+        args=[expr, by],
+        symbol="compose_by",
+        is_elementwise=False,
+    )
+
 
 def calc_future_ret(
     signal: IntoExpr,

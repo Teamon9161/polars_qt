@@ -19,6 +19,9 @@ class ExprQuantExtend:
     def if_then(self, flag, then):
         return if_then(flag, then, self.expr)
 
+    def compose_by(self, by):
+        return compose_by(self.expr, by)
+
     def calc_future_ret(
         self,
         open: IntoExpr,
