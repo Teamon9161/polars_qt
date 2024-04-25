@@ -21,6 +21,6 @@ polars = { version = "0.38", default-features = false, features=["rolling_window
 
 [dependencies.tea_strategy]
 git = "https://github.com/Teamon9161/tea_strategy.git"
-rev = "577932f"
+rev = "f2f5936"
 default-features = false
 features = ['pl']
