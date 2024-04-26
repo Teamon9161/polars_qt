@@ -43,8 +43,16 @@ def if_then(flag_expr: IntoExpr, expr1: IntoExpr, expr2: IntoExpr) -> pl.Expr:
         is_elementwise=False,
     )
 
-def compose_by(expr: IntoExpr, by: IntoExpr) -> pl.Expr:
-    expr = parse_into_expr(expr).diff()
+def compose_by(expr: IntoExpr, by: IntoExpr, method='diff') -> pl.Expr:
+    expr = parse_into_expr(expr)
+    if method == 'diff':
+        expr = expr.diff()
+    elif method is None:
+        pass
+    elif method == 'pct_change':
+        expr = expr.pct_change()
+    else:
+        raise ValueError("method '{}' is not supported", method)
     by = parse_into_expr(by)
     return register_plugin(
         args=[expr, by],

@@ -1,6 +1,6 @@
 [package]
 name = "polars-qt"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 
 [lib]
@@ -21,7 +21,6 @@ polars = { version = "0.39", default-features = false, features=["rolling_window
 
 [dependencies.tea_strategy]
 git = "https://github.com/Teamon9161/tea_strategy.git"
-# rev = "f2f5936"
 branch = "master"
 default-features = false
 features = ['pl']
