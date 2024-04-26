@@ -20,7 +20,7 @@ class ExprQuantExtend:
         return if_then(flag, then, self.expr)
 
     def compose_by(self, by, method='diff'):
-        return compose_by(self.expr, by, method==method)
+        return compose_by(self.expr, by, method=method)
 
     def calc_future_ret(
         self,
