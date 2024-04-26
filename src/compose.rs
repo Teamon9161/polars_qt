@@ -5,27 +5,12 @@ use pyo3_polars::{derive::polars_expr, export::polars_core::export::num::ToPrimi
 #[polars_expr(output_type=Int32)]
 fn compose_by(inputs: &[Series]) -> PolarsResult<Series> {
     let (expr, by) = (&inputs[0], &inputs[1]);
+    assert_eq!(by.len(), 1);
     let value: f64 = match by.dtype() {
-        DataType::Int32 => {
-            let by = by.i32()?;
-            assert_eq!(by.len(), 1);
-            by.get(0).unwrap() as f64
-        }
-        DataType::Int64 => {
-            let by = by.i64()?;
-            assert_eq!(by.len(), 1);
-            by.get(0).unwrap() as f64
-        }
-        DataType::Float32 => {
-            let by = by.f32()?;
-            assert_eq!(by.len(), 1);
-            by.get(0).unwrap() as f64
-        }
-        DataType::Float64 => {
-            let by = by.f64()?;
-            assert_eq!(by.len(), 1);
-            by.get(0).unwrap()
-        }
+        DataType::Int32 => by.i32()?.get(0).unwrap() as f64,
+        DataType::Int64 => by.i64()?.get(0).unwrap() as f64,
+        DataType::Float32 => by.f32()?.get(0).unwrap() as f64,
+        DataType::Float64 => by.f64()?.get(0).unwrap(),
         _ => panic!("unsupported dtype for by in compose_by"),
     };
     match expr.dtype() {
