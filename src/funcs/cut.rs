@@ -24,22 +24,22 @@ pub fn cut(inputs: &[Series], kwargs: CutKwargs) -> PolarsResult<Series> {
             .i32()?
             .to_iter()
             .vcut(bin.cast(&Int32)?.i32()?, labels, right, add_bounds)?
-            .collect_trusted_vec1(),
+            .try_collect_trusted_vec1()?,
         DataType::Int64 => fac
             .i64()?
             .to_iter()
             .vcut(bin.cast(&Int64)?.i64()?, labels, right, add_bounds)?
-            .collect_trusted_vec1(),
+            .try_collect_trusted_vec1()?,
         DataType::Float32 => fac
             .f32()?
             .to_iter()
             .vcut(bin.cast(&Float32)?.f32()?, labels, right, add_bounds)?
-            .collect_trusted_vec1(),
+            .try_collect_trusted_vec1()?,
         DataType::Float64 => fac
             .f64()?
             .to_iter()
             .vcut(bin.cast(&Float64)?.f64()?, labels, right, add_bounds)?
-            .collect_trusted_vec1(),
+            .try_collect_trusted_vec1()?,
         dtype => {
             polars_bail!(InvalidOperation:format!("dtype {dtype} not \
             supported for cut, expected Int32, Int64, Float32, Float64."))
