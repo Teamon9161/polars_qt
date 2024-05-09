@@ -1,4 +1,3 @@
-#![allow(clippy::unused_unit)]
 use super::from_input::FromInput;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;

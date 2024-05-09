@@ -28,6 +28,19 @@ def rolling_rank(
         is_elementwise=False,
     )
 
+def linspace(start: IntoExpr, stop: IntoExpr, num: IntoExpr, eager=True) -> pl.Expr:
+    start = parse_into_expr(start)
+    stop = parse_into_expr(stop)
+    num = parse_into_expr(num)
+    res = register_plugin(
+        args=[start, stop, num],
+        symbol="linspace",
+        is_elementwise=False,
+    )
+    if eager:
+        return pl.select(res).to_series()
+    else:
+        return res
 
 def if_then(flag_expr: IntoExpr, expr1: IntoExpr, expr2: IntoExpr) -> pl.Expr:
     flag_expr = (
@@ -40,6 +53,15 @@ def if_then(flag_expr: IntoExpr, expr1: IntoExpr, expr2: IntoExpr) -> pl.Expr:
     return register_plugin(
         args=[flag_expr, expr1, expr2],
         symbol="if_then",
+        is_elementwise=False,
+    )
+
+def half_life(fac: IntoExpr, min_periods=None) -> pl.Expr:
+    fac = parse_into_expr(fac)
+    return register_plugin(
+        args=[fac],
+        symbol="half_life",
+        kwargs={"min_periods": min_periods},
         is_elementwise=False,
     )
 

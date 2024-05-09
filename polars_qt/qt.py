@@ -22,6 +22,9 @@ class ExprQuantExtend:
     def compose_by(self, by, method='diff'):
         return compose_by(self.expr, by, method=method)
 
+    def half_life(self, min_periods=None) -> pl.Expr:
+        return half_life(self.expr, min_periods=min_periods)
+
     def calc_future_ret(
         self,
         open: IntoExpr,

@@ -1,11 +1,6 @@
-#![allow(clippy::unused_unit)]
+use crate::output_func::same_output_type;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
-
-fn same_output_type(input_fields: &[Field]) -> PolarsResult<Field> {
-    let field = &input_fields[1];
-    Ok(field.clone())
-}
 
 #[polars_expr(output_type_func=same_output_type)]
 fn if_then(inputs: &[Series]) -> PolarsResult<Series> {

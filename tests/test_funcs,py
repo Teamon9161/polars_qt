@@ -1,0 +1,67 @@
+import polars as pl
+import numpy as np
+from numpy.testing import assert_allclose
+from polars.testing import assert_series_equal
+
+import polars_qt as pq
+
+def test_compose_by():
+    df = pl.DataFrame({
+        'p': [100, 101, 103, 102, 104, 102, 100, 98, 96, 95, 97, 94, 99],
+    })
+
+    res = df.select(pl.col.p.qt.compose_by(3))['p']
+    res2 = df.select(pq.compose_by(pl.col.p, 3))['p']
+    expect = pl.Series([0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 4], dtype=pl.Int32)
+    assert_series_equal(res, expect, check_names=False)
+    assert_series_equal(res2, expect, check_names=False)
+
+
+def test_if_then():
+    # test basic
+    df = pl.DataFrame(
+        {
+            "a": [1, 2, 3, 4, 5],
+            "b": [5, 4, 3, 2, 1],
+        }
+    )
+    res = df.select(c=pl.col("a").qt.if_then(pl.col("a").sum() > 13, "b"))
+    assert_series_equal(res["c"], df["b"], check_names=False)
+    df[4, "a"] = 0
+    res = df.select(c=pl.col("a").qt.if_then(pl.col("a").sum() > 13, "b"))
+    assert_series_equal(res["c"], df["a"], check_names=False)
+
+    # test in group_by context
+    df = pl.DataFrame(
+        {
+            "g": ["a", "a", "b", "a", "b"],
+            "v": [1, 3, 5, 2, 4],
+        }
+    )
+    res = df.select(pl.col("v").qt.if_then((pl.len() > 2), pl.col("v") * 2).over("g"))
+    assert_series_equal(res["v"], pl.Series([2, 6, 5, 4, 4]), check_names=False)
+
+
+def test_rolling_rank():
+    df = pl.DataFrame(
+        {
+            "a": [5.2, 4.1, 6.3, None, 10, 4, 5],
+        }
+    )
+    df = df.with_columns(
+        pq.rolling_rank(pl.col("a"), 4, min_periods=1, pct=True).alias("a_rank"),
+        pl.col("a").qt.rolling_rank(4, pct=False, rev=True).alias("a_rank2"),
+    )
+    assert_series_equal(
+        df["a_rank"],
+        pl.Series([1, 0.5, 1.0, None, 1.0, 1 / 3, 2 / 3]),
+        check_names=False,
+    )
+    assert_series_equal(
+        df["a_rank2"], pl.Series([None, 2.0, 1, None, 1, 3, 2]), check_names=False
+    )
+
+def test_linspace():
+    expect = np.linspace(-2, 19, 34)
+    arr = pq.linspace(-2, 19, 34, eager=True)
+    assert_allclose(expect, arr.to_numpy())

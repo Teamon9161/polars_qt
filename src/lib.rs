@@ -1,8 +1,9 @@
-mod compose;
+#![allow(clippy::unused_unit)] // needed for pyo3_polars
+
 #[cfg(feature = "equity")]
 mod equity;
-mod if_then;
-mod rolling_rank;
+mod funcs;
+pub(crate) mod output_func;
 #[cfg(feature = "strategy")]
 mod strategy;
 
