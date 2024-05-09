@@ -19,6 +19,9 @@ class ExprQuantExtend:
     def if_then(self, flag, then):
         return if_then(flag, then, self.expr)
 
+    def cut(self, bins, labels, *, right=True, add_bounds=True):
+        return cut(self.expr, bins, labels, right=right, add_bounds=add_bounds)
+
     def compose_by(self, by, method='diff'):
         return compose_by(self.expr, by, method=method)
 

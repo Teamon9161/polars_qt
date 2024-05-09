@@ -42,6 +42,29 @@ def linspace(start: IntoExpr, stop: IntoExpr, num: IntoExpr, eager=True) -> pl.E
     else:
         return res
 
+def cut(
+    fac: IntoExpr,
+    bins: IntoExpr,
+    labels: IntoExpr,
+    *,
+    right: bool = True,
+    add_bounds: bool = True,
+    eager: bool = False
+) -> pl.Expr:
+    fac = parse_into_expr(fac, list_as_lit=False)
+    bins = parse_into_expr(bins, list_as_lit=False)
+    labels = parse_into_expr(labels, list_as_lit=False)
+    res = register_plugin(
+        args=[fac, bins, labels],
+        kwargs={"right": right, "add_bounds": add_bounds},
+        symbol="cut",
+        is_elementwise=True,
+    )
+    if eager:
+        return pl.select(res).to_series()
+    else:
+        return res
+
 def if_then(flag_expr: IntoExpr, expr1: IntoExpr, expr2: IntoExpr) -> pl.Expr:
     flag_expr = (
         parse_into_expr(flag_expr)
