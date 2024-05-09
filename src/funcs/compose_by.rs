@@ -10,7 +10,8 @@ fn compose_by(inputs: &[Series]) -> PolarsResult<Series> {
         DataType::Int64 => by.i64()?.get(0).unwrap() as f64,
         DataType::Float32 => by.f32()?.get(0).unwrap() as f64,
         DataType::Float64 => by.f64()?.get(0).unwrap(),
-        _ => panic!("unsupported dtype for by in compose_by"),
+        dtype => polars_bail!(InvalidOperation:format!("dtype of value: {dtype} not \
+        supported for compose_by, expected Int32, Int64, Float32, Float64.")),
     };
     match expr.dtype() {
         DataType::Int32 => Ok(impl_compose_by(expr.i32().unwrap(), value).into_series()),
@@ -18,7 +19,7 @@ fn compose_by(inputs: &[Series]) -> PolarsResult<Series> {
         DataType::Float32 => Ok(impl_compose_by(expr.f32().unwrap(), value).into_series()),
         DataType::Float64 => Ok(impl_compose_by(expr.f64().unwrap(), value).into_series()),
         dtype => {
-            polars_bail!(InvalidOperation:format!("dtype {dtype} not \
+            polars_bail!(InvalidOperation:format!("dtype of expr {dtype} not \
             supported for compose_by, expected Int32, Int64, Float32, Float64."))
         }
     }
