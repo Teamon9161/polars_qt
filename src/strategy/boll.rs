@@ -11,7 +11,7 @@ fn boll(inputs: &[Series], kwargs: BollKwargs) -> PolarsResult<Series> {
     } else if inputs.len() == 1 {
         None
     } else {
-        panic!("wrong lenght of inputs in function boll")
+        polars_bail!(ComputeError: "wrong lenght of inputs in function boll")
     };
     let out: Float64Chunked = tea_strategy::boll(fac, filter, &kwargs);
     Ok(out.into_series())
@@ -25,7 +25,7 @@ fn auto_boll(inputs: &[Series], kwargs: AutoBollKwargs) -> PolarsResult<Series> 
     } else if inputs.len() == 1 {
         None
     } else {
-        panic!("wrong lenght of inputs in function boll")
+        polars_bail!(ComputeError: "wrong lenght of inputs in function auto boll")
     };
     let out: Float64Chunked = tea_strategy::auto_boll(fac, filter, &kwargs);
     Ok(out.into_series())

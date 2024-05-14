@@ -11,7 +11,7 @@ fn martingale(inputs: &[Series], kwargs: MartingaleKwargs) -> PolarsResult<Serie
     } else if inputs.len() == 1 {
         None
     } else {
-        panic!("wrong lenght of inputs in function boll")
+        polars_bail!(ComputeError: "wrong lenght of inputs in function martingale")
     };
     let out: Float64Chunked = tea_strategy::martingale(fac, filter, &kwargs);
     Ok(out.into_series())

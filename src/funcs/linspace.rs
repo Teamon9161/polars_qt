@@ -6,9 +6,10 @@ use tea_strategy::tevec::prelude::*;
 pub fn linspace(inputs: &[Series]) -> PolarsResult<Series> {
     let (start, end, num) = (&inputs[0], &inputs[1], &inputs[2]);
     let name = start.name();
-    if (start.len() != 1) || (end.len() != 1) || (num.len() != 1) {
-        polars_bail!(InvalidOperation:format!("linspace expects all inputs to be scalars"))
-    }
+    polars_ensure!(
+        (start.len() == 1) && (end.len() == 1) && (num.len() == 1),
+        ComputeError: "linspace expects all inputs to be scalars"
+    );
     use DataType::*;
     let arr: Float64Chunked = Vec1Create::linspace(
         Some(start.cast(&Float64)?.f64()?.get(0).unwrap()),

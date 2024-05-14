@@ -33,8 +33,8 @@ fn rolling_rank(inputs: &[Series], kwargs: TsRankKwargs) -> PolarsResult<Series>
                 .ts_vrank(kwargs.window, kwargs.min_periods, kwargs.pct, kwargs.rev)
         }
         dtype => {
-            polars_bail!(InvalidOperation:format!("dtype {dtype} not \
-            supported for rolling_rank, expected Int32, Int64, Float32, Float64."))
+            polars_bail!(InvalidOperation: "dtype {dtype} not \
+            supported for rolling_rank, expected Int32, Int64, Float32, Float64.")
         }
     };
     Ok(out.with_name(name).into_series())
