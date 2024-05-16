@@ -1,7 +1,8 @@
-import polars as pl
 import numpy as np
+import polars as pl
 from numpy.testing import assert_allclose
 from polars.testing import assert_series_equal
+
 import polars_qt as pq
 
 

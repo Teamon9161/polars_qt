@@ -23,8 +23,6 @@ def test_boll():
             pl.col('close') > 0, False,  # long open, long stop
             'short_open_filter', False,  # short open, short stop
         ], delay_open=True).alias('s3'),
-        # # boll with fac_vol stop, take profit if close reaches 5 * fac_vol
-        # pl.col('close').qt.boll((4, 1, 5), fac_vol=pl.repeat(1, pl.col('close').len())).alias('s4'),
     ])#.with_columns(upper=pl.col('mean')+pl.col('std'), down=pl.col('mean')-pl.col('std')).to_pandas()
 
     expect1 = pl.Series('s1', [0., 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, -1, -1, -1, 0, 0, 0, -1])
@@ -33,6 +31,3 @@ def test_boll():
     assert_series_equal(df['s2'], expect2)
     expect3 = pl.Series('s3', [0., 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, -1, -1, -1, 0, 0, 0, -1])
     assert_series_equal(df['s3'], expect3)
-    # expect3 = pl.Series('s4', [0., 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, -1, -1, 0, 0, -1, 0, 0, 0, -1])
-    # assert_series_equal(df['s4'], expect3)
-test_boll()

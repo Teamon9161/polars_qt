@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from functools import wraps
+
 import polars as pl
 
 from .funcs import *
-from .strategy import boll
+from .strategy import auto_boll, boll, fix_time
 
 
 @pl.api.register_expr_namespace("qt")
@@ -86,8 +88,6 @@ class ExprQuantExtend:
         filters: long_open, long_stop, short_open, short_stop
             for open condition, if filter is False, open behavior is disabled
             for stop condition, if filter is True, return signal will be close_signal
-        # fac_vol:
-        #     a expression to calculate fac_vol, if None, we will use the default bollinger bands
         rev: reverse the long and short signal, filters will also be reversed automatically
         delay_open: if open signal is blocked by filters, whether to delay the open signal when filters are True
         """
@@ -96,7 +96,6 @@ class ExprQuantExtend:
             params=params,
             min_periods=min_periods,
             filters=filters,
-            # fac_vol=fac_vol,
             rev=rev,
             delay_open=delay_open,
             long_signal=long_signal,
@@ -106,3 +105,13 @@ class ExprQuantExtend:
 
     def boll_rev(self, *args, **kwargs):
         return self.boll(*args, **kwargs, rev=True)
+
+
+    @wraps(fix_time)
+    def fix_time(self, *args, **kwargs):
+        return fix_time(self.expr, *args, **kwargs)
+
+
+    @wraps(auto_boll)
+    def auto_boll(self, *args, **kwargs):
+        return auto_boll(self.expr, *args, **kwargs)

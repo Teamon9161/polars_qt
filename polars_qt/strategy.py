@@ -36,8 +36,6 @@ def boll(
     filters: long_open, long_stop, short_open, short_stop
         for open condition, if filter is False, open behavior is disabled
         for stop condition, if filter is True, return signal will be close_signal
-    # fac_vol:
-    #     a expression to calculate fac_vol, if None, we will use the default bollinger bands
     rev: reverse the long and short signal, filters will also be reversed automatically
     delay_open: if open signal is blocked by filters, whether to delay the open signal when filters are True
     """
@@ -129,8 +127,6 @@ def auto_boll(
         filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
         filters = [*filters[2:], *filters[:2]] if rev else filters
         args.extend(filters)
-    else:
-        pass
     if rev:
         long_signal, short_signal = short_signal, long_signal
 
@@ -182,5 +178,33 @@ def martingale(
         args=args,
         kwargs=kwargs,
         symbol='martingale',
+        is_elementwise=False,
+    )
+
+def fix_time(
+    fac: IntoExpr,
+    n: int,
+    pos_map: tuple(list) | None,
+    filters: IntoExpr | None=None,
+    *,
+    extend_time: bool=False,
+    rev: bool=False
+) -> pl.Expr:
+    fac = parse_into_expr(fac)
+    args = [fac]
+    if filters is not None:
+        assert len(filters) == 4, "filters must be a list of 4 elements"
+        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [*filters[2:], *filters[:2]] if rev else filters
+        args.extend(filters)
+    kwargs = {
+        'n': n,
+        'pos_map': pos_map,
+        'extend_time': extend_time,
+    }
+    return register_plugin(
+        args=args,
+        kwargs=kwargs,
+        symbol='fix_time',
         is_elementwise=False,
     )
