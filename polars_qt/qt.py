@@ -5,7 +5,7 @@ from functools import wraps
 import polars as pl
 
 from .funcs import *
-from .strategy import auto_boll, boll, fix_time
+from .strategy import auto_boll, boll, delay_boll, fix_time
 
 
 @pl.api.register_expr_namespace("qt")
@@ -115,3 +115,7 @@ class ExprQuantExtend:
     @wraps(auto_boll)
     def auto_boll(self, *args, **kwargs):
         return auto_boll(self.expr, *args, **kwargs)
+
+    @wraps(delay_boll)
+    def delay_boll(self, *args, **kwargs):
+        return delay_boll(self.expr, *args, **kwargs)
