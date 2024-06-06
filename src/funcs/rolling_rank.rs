@@ -1,3 +1,4 @@
+use polars::prelude::DataType as PlDataType;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
 use serde::Deserialize;
@@ -16,19 +17,19 @@ fn rolling_rank(inputs: &[Series], kwargs: TsRankKwargs) -> PolarsResult<Series>
     let s = &inputs[0];
     let name = s.name();
     let out: Float64Chunked = match s.dtype() {
-        DataType::Int32 => {
+        PlDataType::Int32 => {
             s.i32()?
                 .ts_vrank(kwargs.window, kwargs.min_periods, kwargs.pct, kwargs.rev)
         }
-        DataType::Int64 => {
+        PlDataType::Int64 => {
             s.i64()?
                 .ts_vrank(kwargs.window, kwargs.min_periods, kwargs.pct, kwargs.rev)
         }
-        DataType::Float32 => {
+        PlDataType::Float32 => {
             s.f32()?
                 .ts_vrank(kwargs.window, kwargs.min_periods, kwargs.pct, kwargs.rev)
         }
-        DataType::Float64 => {
+        PlDataType::Float64 => {
             s.f64()?
                 .ts_vrank(kwargs.window, kwargs.min_periods, kwargs.pct, kwargs.rev)
         }

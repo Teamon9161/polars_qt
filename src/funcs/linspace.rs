@@ -1,3 +1,4 @@
+use polars::prelude::DataType as PlDataType;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
 use tea_strategy::tevec::prelude::*;
@@ -10,7 +11,7 @@ pub fn linspace(inputs: &[Series]) -> PolarsResult<Series> {
         (start.len() == 1) && (end.len() == 1) && (num.len() == 1),
         ComputeError: "linspace expects all inputs to be scalars"
     );
-    use DataType::*;
+    use PlDataType::*;
     let arr: Float64Chunked = Vec1Create::linspace(
         Some(start.cast(&Float64)?.f64()?.get(0).unwrap()),
         end.cast(&Float64)?.f64()?.get(0).unwrap(),
