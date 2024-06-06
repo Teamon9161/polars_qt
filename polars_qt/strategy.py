@@ -248,3 +248,61 @@ def fix_time(
         symbol='fix_time',
         is_elementwise=False,
     )
+
+def auto_tangqian(
+    fac: IntoExpr,
+    params: tuple[int, float, float] | tuple[int, float] | int,
+    pos_map: (list[float], list[float]) | None=None,
+    min_periods: int | None=None,
+    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None=None,
+    *,
+    rev=False,
+    long_signal: float=1,
+    short_signal: float=-1,
+    close_signal: float=0,
+) -> pl.Expr:
+    """
+    TangQian Bands Strategy
+    fac: factor to calculate TangQiAn bands
+    params:
+        params: window, open_width, stop_width(default: 0.0)
+    min_periods: minimum periods to calculate bollinger bands
+    filters: long_open, long_stop, short_open, short_stop
+        for open condition, if filter is False, open behavior is disabled
+        for stop condition, if filter is True, return signal will be close_signal
+    rev: reverse the long and short signal, filters will also be reversed automatically
+    delay_open: if open signal is blocked by filters, whether to delay the open signal when filters are True
+    """
+    fac = parse_into_expr(fac)
+    # process params
+    if not isinstance(params, (tuple, list)):
+        params = (params, 0., 0.)
+    elif len(params) == 1:
+        params = (*params, 0., 0.)
+    elif len(params) == 2:
+        params = (*params, 0.)
+
+    # process args and filters
+    args = [fac]
+    if filters is not None:
+        assert len(filters) == 4, "filters must be a list of 4 elements"
+        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [*filters[2:], *filters[:2]] if rev else filters
+        args.extend(filters)
+    if rev:
+        long_signal, short_signal = short_signal, long_signal
+
+    kwargs = {
+        "params": params,
+        "min_periods": min_periods,
+        "pos_map": pos_map,
+        "long_signal": float(long_signal),
+        "short_signal": float(short_signal),
+        "close_signal": float(close_signal),
+    }
+    return register_plugin(
+        args=args,
+        kwargs=kwargs,
+        symbol="auto_tangqian",
+        is_elementwise=False,
+    )
