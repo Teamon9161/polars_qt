@@ -13,10 +13,10 @@ macro_rules! define_strategy {
             };
             let fac = &inputs[0];
             let out: Float64Chunked = match fac.dtype() {
-                DataType::Int32 => tea_strategy::$strategy(fac.i32()?, filter, &kwargs)$($mark)?,
-                DataType::Int64 => tea_strategy::$strategy(fac.i64()?, filter, &kwargs)$($mark)?,
-                DataType::Float32 => tea_strategy::$strategy(fac.f32()?, filter, &kwargs)$($mark)?,
-                DataType::Float64 => tea_strategy::$strategy(fac.f64()?, filter, &kwargs)$($mark)?,
+                DataType::Int32 => tea_strategy::$strategy(fac.i32()?, filter.as_ref(), &kwargs)$($mark)?,
+                DataType::Int64 => tea_strategy::$strategy(fac.i64()?, filter.as_ref(), &kwargs)$($mark)?,
+                DataType::Float32 => tea_strategy::$strategy(fac.f32()?, filter.as_ref(), &kwargs)$($mark)?,
+                DataType::Float64 => tea_strategy::$strategy(fac.f64()?, filter.as_ref(), &kwargs)$($mark)?,
                 dtype => polars_bail!(InvalidOperation: format!("dtype {} not supported for {}", dtype, stringify!($strategy))),
             };
             Ok(out.into_series())

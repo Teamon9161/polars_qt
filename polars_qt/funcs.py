@@ -28,6 +28,23 @@ def rolling_rank(
         is_elementwise=False,
     )
 
+def fdiff(
+    expr: IntoExpr, d: float, window: int, min_periods=None,
+) -> pl.Expr:
+    expr = parse_into_expr(expr)
+    if min_periods is None:
+        min_periods = window // 2
+    return register_plugin(
+        args=[expr],
+        kwargs={
+            "d": d,
+            "window": window,
+            "min_periods": min_periods,
+        },
+        symbol="fdiff",
+        is_elementwise=False,
+    )
+
 def linspace(start: IntoExpr, stop: IntoExpr, num: IntoExpr, eager=True) -> pl.Expr:
     start = parse_into_expr(start)
     stop = parse_into_expr(stop)

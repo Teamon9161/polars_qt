@@ -62,6 +62,12 @@ def test_rolling_rank():
         df["a_rank2"], pl.Series([None, 2.0, 1, None, 1, 3, 2]), check_names=False
     )
 
+def test_fdiff():
+    df = pl.DataFrame({'a': [7, 4, 2, 5, 1, 2]})
+    df = df.with_columns(pl.col.a.qt.fdiff(0.5, 4))
+    assert_series_equal(df['a'], pl.Series([None, 0.5, -0.875, 3.0625, -2., 0.75]), check_names=False)
+
+
 def test_linspace():
     expect = np.linspace(-2, 19, 34)
     arr = pq.linspace(-2, 19, 34, eager=True)

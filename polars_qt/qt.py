@@ -18,6 +18,9 @@ class ExprQuantExtend:
             self.expr, window=window, min_periods=min_periods, pct=pct, rev=rev
         )
 
+    def fdiff(self, d: float, window: int, min_periods=None) -> pl.Expr:
+        return fdiff(self.expr, d=d, window=window, min_periods=min_periods)
+
     def if_then(self, flag, then):
         return if_then(flag, then, self.expr)
 
