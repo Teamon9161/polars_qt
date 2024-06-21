@@ -105,6 +105,19 @@ def half_life(fac: IntoExpr, min_periods=None) -> pl.Expr:
         is_elementwise=False,
     )
 
+def to_trades(signal: IntoExpr, time: IntoExpr, price: IntoExpr | (IntoExpr, IntoExpr)) -> pl.Expr:
+    signal = parse_into_expr(signal)
+    time = parse_into_expr(time)
+    if isinstance(price, tuple):
+        price = [parse_into_expr(p) for p in price]
+    else:
+        price = [parse_into_expr(price)]
+    return register_plugin(
+        args=[signal, time, *price],
+        symbol="to_trades",
+        is_elementwise=False,
+    )
+
 def compose_by(expr: IntoExpr, by: IntoExpr, method='diff') -> pl.Expr:
     expr = parse_into_expr(expr)
     if method == 'diff':

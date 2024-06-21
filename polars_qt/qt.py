@@ -114,6 +114,10 @@ class ExprQuantExtend:
     def fix_time(self, *args, **kwargs):
         return fix_time(self.expr, *args, **kwargs)
 
+    @wraps(to_trades)
+    def to_trades(self, *args, **kwargs):
+        return to_trades(self.expr, *args, **kwargs)
+
     @wraps(auto_boll)
     def auto_boll(self, *args, **kwargs):
         return auto_boll(self.expr, *args, **kwargs)

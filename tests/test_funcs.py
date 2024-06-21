@@ -92,3 +92,17 @@ def test_cut():
     res = pq.cut(arr, bins, labels, right=False, add_bounds=False, eager=True)
     expect = pd.cut(arr, bins, labels=labels, right=False)
     assert_allclose(res.to_numpy(), expect)
+
+def test_trades():
+    from datetime import date
+    df = pl.DataFrame({
+        'price': [100, 101, 102, 103, 104, 105],
+        "signal": [0., 0., 1., 1., -1, -1.],
+        "time": pl.date_range(date(2020, 1, 1), date(2020, 1, 6), interval='1d', eager=True),
+    })
+    trades = df.select(trade=pl.col.signal.qt.to_trades(time='time', price='price'))
+    assert_series_equal(
+        trades['trade'].struct['time'],
+        pl.Series([date(2020, 1, 3), date(2020, 1, 5)], dtype=pl.Datetime("ns")),
+        check_names=False
+    )
