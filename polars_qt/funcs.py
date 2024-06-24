@@ -152,9 +152,9 @@ def calc_future_ret(
     commision_type: str = "Percent",
     contract_chg_signal: IntoExpr | None = None,
 ) -> pl.Expr:
-    open = parse_into_expr(open).cast(pl.Float64)
-    close = parse_into_expr(close).cast(pl.Float64)
-    signal = parse_into_expr(signal).cast(pl.Float64)
+    open = parse_into_expr(open)
+    close = parse_into_expr(close)
+    signal = parse_into_expr(signal)
     pos = signal.shift(fill_value=0) if is_signal else signal
     base_config = {
         "init_cash": int(init_cash),
@@ -172,7 +172,7 @@ def calc_future_ret(
         base_config["ticksize"] = ticksize
         args = [pos, open, close]
         if contract_chg_signal is not None:
-            args.append(parse_into_expr(contract_chg_signal).cast(pl.Boolean))
+            args.append(parse_into_expr(contract_chg_signal))
         return register_plugin(
             args=args,
             symbol="calc_future_ret",
@@ -180,13 +180,52 @@ def calc_future_ret(
             kwargs=base_config,
         )
     else:
-        slippage = parse_into_expr(slippage).cast(pl.Float64)
+        slippage = parse_into_expr(slippage)
         args = [pos, open, close, slippage]
         if contract_chg_signal is not None:
-            args.append(parse_into_expr(contract_chg_signal).cast(pl.Boolean))
+            args.append(parse_into_expr(contract_chg_signal))
         return register_plugin(
             args=args,
             symbol="calc_future_ret_with_spread",
             is_elementwise=False,
             kwargs=base_config,
         )
+
+
+
+def calc_tick_future_ret(
+    signal: IntoExpr,
+    bid: IntoExpr,
+    ask: IntoExpr,
+    *,
+    is_signal: bool = True,
+    init_cash: int = 10_000_000,
+    multiplier: int = 1,
+    c_rate: float = 3e-4,
+    blowup: bool = False,
+    commision_type: str = "Percent",
+    contract_chg_signal: IntoExpr | None = None,
+) -> pl.Expr:
+    bid = parse_into_expr(bid)
+    ask = parse_into_expr(ask)
+    signal = parse_into_expr(signal)
+    # cast pos to signal if signal is pos
+    signal = signal.shift(-1, fill_value=0) if not is_signal else signal
+    kwargs = {
+        "init_cash": int(init_cash),
+        "multiplier": multiplier,
+        "c_rate": c_rate,
+        "blowup": blowup,
+        "commision_type": commision_type,
+    }
+    assert commision_type in ["Percent", "Absolute"]
+
+    args = [signal, bid, ask]
+    if contract_chg_signal is not None:
+        args.append(parse_into_expr(contract_chg_signal))
+    return register_plugin(
+        args=args,
+        symbol="calc_tick_future_ret",
+        is_elementwise=False,
+        kwargs=kwargs,
+    )

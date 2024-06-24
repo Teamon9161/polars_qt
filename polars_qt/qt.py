@@ -65,6 +65,10 @@ class ExprQuantExtend:
             contract_chg_signal=contract_chg_signal,
         )
 
+    @wraps(calc_tick_future_ret)
+    def calc_tick_future_ret(self, *args, **kwargs) -> pl.Expr:
+        return calc_tick_future_ret(self.expr, *args, **kwargs)
+
     def boll(
         self,
         params: tuple[int, float, float] | tuple[int, float] | int,
