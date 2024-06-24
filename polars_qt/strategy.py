@@ -228,14 +228,12 @@ def fix_time(
     filters: IntoExpr | None=None,
     *,
     extend_time: bool=False,
-    rev: bool=False
 ) -> pl.Expr:
     fac = parse_into_expr(fac)
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
         filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
-        filters = [*filters[2:], *filters[:2]] if rev else filters
         args.extend(filters)
     kwargs = {
         'n': n,
@@ -304,5 +302,30 @@ def auto_tangqian(
         args=args,
         kwargs=kwargs,
         symbol="auto_tangqian",
+        is_elementwise=False,
+    )
+
+def prob_threshold(
+    fac: IntoExpr,
+    thresholds: (float, float, float, float),
+    per_hand = 1.,
+    max_hand = 3.,
+    filters: IntoExpr | None=None,
+) -> pl.Expr:
+    fac = parse_into_expr(fac)
+    args = [fac]
+    if filters is not None:
+        assert len(filters) == 4, "filters must be a list of 4 elements"
+        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        args.extend(filters)
+    kwargs = {
+        'thresholds': thresholds,
+        'per_hand': float(per_hand),
+        'max_hand': float(max_hand),
+    }
+    return register_plugin(
+        args=args,
+        kwargs=kwargs,
+        symbol='prob_threshold',
         is_elementwise=False,
     )

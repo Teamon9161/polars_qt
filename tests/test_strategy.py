@@ -31,3 +31,16 @@ def test_boll():
     assert_series_equal(df['s2'], expect2)
     expect3 = pl.Series('s3', [0., 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, -1, -1, -1, 0, 0, 0, -1])
     assert_series_equal(df['s3'], expect3)
+
+def test_prob_thres():
+    df = pl.DataFrame({
+        'prob': [0.3, 0.6, 0.7, 0.6, 0.4, 0.2, 0.5, 0.4],
+    })
+    kwargs = {
+        'thresholds': (0.6, 0.5, 0.4, 0.5),
+        'per_hand': 1.,
+        'max_hand': 2.,
+    }
+    df = df.with_columns(res=pl.col.prob.qt.prob_threshold(**kwargs))
+    expect = pl.Series('res', [-1., 1., 2., 2., -1., -2., 0., -1.])
+    assert_series_equal(df['res'], expect)

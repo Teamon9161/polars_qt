@@ -14,3 +14,4 @@ define_strategy!(delay_boll{?}, DelayBollKwargs);
 define_strategy!(martingale{?}, MartingaleKwargs);
 define_strategy!(fix_time{?}, FixTimeKwargs);
 define_strategy!(auto_tangqian{?}, AutoTangQiAnKwargs);
+define_strategy!(prob_threshold{?}, ProbThresholdKwargs);
