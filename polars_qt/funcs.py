@@ -7,6 +7,8 @@ import polars as pl
 from polars_qt.utils import parse_into_expr, register_plugin
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from polars.type_aliases import IntoExpr
 
 
@@ -269,3 +271,9 @@ def calc_tick_future_ret(
         is_elementwise=False,
         kwargs=kwargs,
     )
+
+def to_datetime(t: str | datetime) -> datetime:
+    if isinstance(t, str):
+        return pl.Series([t]).str.to_datetime()[0]
+    else:
+        return t
