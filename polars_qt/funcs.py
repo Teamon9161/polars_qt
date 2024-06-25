@@ -108,7 +108,7 @@ def half_life(fac: IntoExpr, min_periods=None) -> pl.Expr:
 def to_trades(signal: IntoExpr, time: IntoExpr, price: IntoExpr | (IntoExpr, IntoExpr)) -> pl.Expr:
     signal = parse_into_expr(signal)
     time = parse_into_expr(time)
-    if isinstance(price, tuple):
+    if isinstance(price, (tuple, list)):
         price = [parse_into_expr(p) for p in price]
     else:
         price = [parse_into_expr(price)]
