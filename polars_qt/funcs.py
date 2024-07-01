@@ -31,7 +31,7 @@ def rolling_rank(
     )
 
 def fdiff(
-    expr: IntoExpr, d: float, window: int, min_periods=None,
+    expr: IntoExpr, d: float, window: int, ignore_na=True, min_periods=None,
 ) -> pl.Expr:
     expr = parse_into_expr(expr)
     if min_periods is None:
@@ -41,6 +41,7 @@ def fdiff(
         kwargs={
             "d": d,
             "window": window,
+            "ignore_na": ignore_na,
             "min_periods": min_periods,
         },
         symbol="fdiff",
