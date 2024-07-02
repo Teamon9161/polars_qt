@@ -4,6 +4,11 @@ from functools import wraps
 
 import polars as pl
 
+from .equity import (
+    calc_future_ret,
+    calc_tick_future_ret,
+    to_trades,
+)
 from .funcs import *
 from .strategy import (
     auto_boll,
@@ -78,3 +83,7 @@ class ExprQuantExtend:
     @wraps(delay_boll)
     def delay_boll(self, *args, **kwargs):
         return delay_boll(self.expr, *args, **kwargs)
+
+    @wraps(rolling_ewm)
+    def rolling_ewm(self, *args, **kwargs):
+        return rolling_ewm(self.expr, *args, **kwargs)

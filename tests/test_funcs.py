@@ -106,3 +106,24 @@ def test_trades():
         pl.Series([date(2020, 1, 3), date(2020, 1, 5)], dtype=pl.Datetime("ns")),
         check_names=False
     )
+
+
+def test_rolling_ewm():
+    df = pl.DataFrame({
+        "a": [5.493, 5.325, 5.214, None, 5.123, 5.732, 5.212, 5.124],
+    })
+    window = 5
+    def ewm(s):
+        alpha = 2 / window
+        n = s.count()
+        if n > 0:
+            weight = np.logspace(n - 1, 0, num=n, base=(1 - alpha))
+            weight /= weight.sum()
+            return (weight * s.filter(s.is_not_null())).sum()
+        else:
+            return np.nan
+    df = df.with_columns([
+        pl.col.a.qt.rolling_ewm(window).alias('ewm'),
+        pl.col.a.cast(float).rolling_map(ewm, window_size=window, min_periods=2).alias('ewm2')
+    ])
+    assert_series_equal(df['ewm'], df['ewm2'], check_names=False)
