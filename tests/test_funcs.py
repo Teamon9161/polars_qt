@@ -46,7 +46,7 @@ def test_if_then():
 def test_rolling_rank():
     df = pl.DataFrame(
         {
-            "a": [5.2, 4.1, 6.3, None, 10, 4, 5],
+            "a": [5.2, 4.1, 6.3, None, 10., 4., 5.],
         }
     )
     df = df.with_columns(
@@ -55,11 +55,11 @@ def test_rolling_rank():
     )
     assert_series_equal(
         df["a_rank"],
-        pl.Series([1, 0.5, 1.0, None, 1.0, 1 / 3, 2 / 3]),
+        pl.Series([1., 0.5, 1.0, None, 1.0, 1 / 3, 2 / 3]),
         check_names=False,
     )
     assert_series_equal(
-        df["a_rank2"], pl.Series([None, 2.0, 1, None, 1, 3, 2]), check_names=False
+        df["a_rank2"], pl.Series([None, 2.0, 1., None, 1., 3., 2.]), check_names=False
     )
 
 def test_fdiff():
