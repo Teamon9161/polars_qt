@@ -15,10 +15,9 @@ def test_calc_ret_single():
             "open": [98, 100, 103, 105, 96, 220, 226],
             "close": [100, 102, 105, 96, 90, 226, 220],
             "contract_chg_signal": [0, 0, 0, 0, 0, 1, 0],
-            "pos": [0, 1, 1, 0.5, -0.5, -0.5, 0],
+            "pos": [0., 1., 1., 0.5, -0.5, -0.5, 0.],
             "spread": [0] * 7,
         },
-        strict=False
     )
     config = {
         "open": "open",
@@ -37,15 +36,14 @@ def test_calc_ret_single():
 
     expect = pl.Series(
         [
-            1_000_000,
-            1_039_400,
-            1_099_400,
+            1_000_000.,
+            1_039_400.,
+            1_099_400.,
             1_004_869.805,
             1067027.021,
             1037286.821,
             1036957.991,
         ],
-        strict=False
     )
     assert_series_equal(out["equity1"], expect, check_names=False)
     assert_series_equal(out["equity2"], expect, check_names=False)
