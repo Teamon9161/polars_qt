@@ -1,6 +1,6 @@
 [package]
 name = "polars-qt"
-version = "0.1.23"
+version = "0.1.24"
 edition = "2021"
 
 [lib]
@@ -21,6 +21,7 @@ polars = { version = "0.41.2", default-features = false, features = [
     "rolling_window",
     "temporal",
 ] }
+gauss-quad = "0.1.9"
 
 [dependencies.tevec]
 git = "https://github.com/Teamon9161/tevec.git"

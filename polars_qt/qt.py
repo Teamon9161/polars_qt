@@ -45,45 +45,38 @@ class ExprQuantExtend:
     def half_life(self, min_periods=None) -> pl.Expr:
         return half_life(self.expr, min_periods=min_periods)
 
-    @wraps(calc_future_ret)
     def calc_future_ret(self, *args, **kwargs) -> pl.Expr:
         return calc_future_ret(self.expr, *args, **kwargs)
 
-    @wraps(calc_tick_future_ret)
     def calc_tick_future_ret(self, *args, **kwargs) -> pl.Expr:
         return calc_tick_future_ret(self.expr, *args, **kwargs)
 
-    @wraps(boll)
     def boll(self, *args, **kwargs) -> pl.Expr:
         return boll(self.expr, *args, **kwargs)
 
     def boll_rev(self, *args, **kwargs):
         return self.boll(*args, **kwargs, rev=True)
 
-    @wraps(fix_time)
     def fix_time(self, *args, **kwargs):
         return fix_time(self.expr, *args, **kwargs)
 
-    @wraps(prob_threshold)
     def prob_threshold(self, *args, **kwargs):
         return prob_threshold(self.expr, *args, **kwargs)
 
-    @wraps(to_trades)
     def to_trades(self, *args, **kwargs):
         return to_trades(self.expr, *args, **kwargs)
 
-    @wraps(auto_boll)
     def auto_boll(self, *args, **kwargs):
         return auto_boll(self.expr, *args, **kwargs)
 
-    @wraps(auto_tangqian)
     def auto_tangqian(self, *args, **kwargs):
         return auto_tangqian(self.expr, *args, **kwargs)
 
-    @wraps(delay_boll)
     def delay_boll(self, *args, **kwargs):
         return delay_boll(self.expr, *args, **kwargs)
 
-    @wraps(rolling_ewm)
     def rolling_ewm(self, *args, **kwargs):
         return rolling_ewm(self.expr, *args, **kwargs)
+
+    def tick_up_prob(self, *args, **kwargs):
+        return tick_up_prob(self.expr, *args, **kwargs)

@@ -30,6 +30,18 @@ def rolling_rank(
         is_elementwise=False,
     )
 
+def tick_up_prob(n_ask: IntoExpr, n_bid: IntoExpr, degree=None) -> pl.Expr:
+    n_ask = parse_into_expr(n_ask)
+    n_bid = parse_into_expr(n_bid)
+    return register_plugin(
+        args=[n_ask, n_bid],
+        kwargs={
+            "degree": degree,
+        },
+        symbol="tick_up_prob",
+        is_elementwise=True,
+    )
+
 def rolling_ewm(
     expr: IntoExpr, window, min_periods=None
 ) -> pl.Expr:
