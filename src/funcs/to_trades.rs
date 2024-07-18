@@ -1,8 +1,8 @@
 use polars::prelude::DataType as PlDataType;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
+use tea_strategy::tevec::prelude::{unit, DateTime, TIter};
 use tea_strategy::{signal_to_trades, trade_vec_to_series};
-use tevec::prelude::{unit, DateTime, TIter};
 
 #[polars_expr(output_type=Float64)]
 pub fn to_trades(inputs: &[Series]) -> PolarsResult<Series> {
