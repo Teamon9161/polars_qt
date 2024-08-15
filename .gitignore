@@ -14,3 +14,4 @@ dist/
 target/
 
 *_extend/
+*.zip

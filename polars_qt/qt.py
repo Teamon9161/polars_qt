@@ -7,6 +7,7 @@ import polars as pl
 from .equity import (
     calc_future_ret,
     calc_tick_future_ret,
+    calc_tick_future_ret_full,
     to_trades,
 )
 from .funcs import *
@@ -50,6 +51,9 @@ class ExprQuantExtend:
 
     def calc_tick_future_ret(self, *args, **kwargs) -> pl.Expr:
         return calc_tick_future_ret(self.expr, *args, **kwargs)
+
+    def calc_tick_future_ret_full(self, *args, **kwargs) -> pl.Expr:
+        return calc_tick_future_ret_full(self.expr, *args, **kwargs)
 
     def boll(self, *args, **kwargs) -> pl.Expr:
         return boll(self.expr, *args, **kwargs)

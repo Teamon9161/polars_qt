@@ -29,7 +29,7 @@ where
     T2: PolarsDataType + PolarsNumericType,
     T2::Native: Cast<f64>,
 {
-    let quad_method = Midpoint::init(degree.unwrap_or(1_000_000));
+    let quad_method = Midpoint::new(degree.unwrap_or(1_000_000)).unwrap();
     binary_elementwise(n_ask, n_bid, |n_ask, n_bid| match (n_ask, n_bid) {
         (Some(n_ask), Some(n_bid)) => Some(up_prob(n_ask.cast(), n_bid.cast(), &quad_method)),
         _ => None,
@@ -69,7 +69,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_up_prob() {
-        let quad_method = Midpoint::init(1_000_000);
+        let quad_method = Midpoint::new(1_000_000).unwrap();
         let res = up_prob(2., 1., &quad_method);
         assert!((res - 0.30234727368).abs() < 1e-10)
     }

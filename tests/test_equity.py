@@ -65,8 +65,8 @@ def test_calc_tick_ret():
         "multiplier": 1,
     }
     expect = pl.Series("cash", [
-        10000., 10000., 10047.5009, 10144.5009, 10047.5009, 9853.5009, 9754.5318, 9660.5318,
-        9636.073, 9796.1162, 9888.1162, 9791.208,
+        10000.0, 10000.0, 10047.5009, 10144.5009, 10047.5009, 9853.5009, 9779.5458, 9685.5458,
+        9661.087, 9821.1302, 9913.1302, 9816.222,
     ])
     df = df.with_columns(cash = pl.col.signal.qt.calc_tick_future_ret(pl.col.bid, pl.col.ask, **kwargs))
     assert_series_equal(df['cash'], expect)

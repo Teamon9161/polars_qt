@@ -106,7 +106,7 @@ def calc_tick_future_ret(
     multiplier: int = 1,
     c_rate: float = 3e-4,
     blowup: bool = False,
-    commision_type: str = "Percent",
+    commission_type: str = "Percent",
     signal_type: str = "Percent",
     contract_chg_signal: IntoExpr | None = None,
 ) -> pl.Expr:
@@ -124,7 +124,7 @@ def calc_tick_future_ret(
     multiplier: contract multiplier
     c_rate: commision rate
     blowup: whether to blow up account when cash is less than 0
-    commision_type: commision type, Percent or Absolute
+    commission_type: commission type, Percent or Absolute
         percent: percent | pct
         absolute: absolute | fixed | fix
     signal_type: signal type, Percent or Absolute
@@ -142,7 +142,7 @@ def calc_tick_future_ret(
         "multiplier": multiplier,
         "c_rate": c_rate,
         "blowup": blowup,
-        "commision_type": commision_type,
+        "commission_type": commission_type,
         "signal_type": signal_type,
     }
 
@@ -152,6 +152,66 @@ def calc_tick_future_ret(
     return register_plugin(
         args=args,
         symbol="calc_tick_future_ret",
+        is_elementwise=False,
+        kwargs=kwargs,
+    )
+
+def calc_tick_future_ret_full(
+    signal: IntoExpr,
+    bid: IntoExpr,
+    ask: IntoExpr,
+    *,
+    is_signal: bool = True,
+    init_cash: int = 0,
+    multiplier: int = 1,
+    c_rate: float = 3e-4,
+    blowup: bool = False,
+    commission_type: str = "Percent",
+    # signal_type: str = "Absolute",
+    open_price_method: str = "average",
+    contract_chg_signal: IntoExpr | None = None,
+) -> pl.Expr:
+    """
+    Calculate future return with tick data.
+    signal:
+        if signal_type is percent:
+            signal to trade, 1 for long, -1 for short, 0 for close position, 0.5 for half long position
+        if signal_type is absolute:
+            lot_num signal to trade
+    bid: bid1 price series
+    ask: ask1 price series
+    is_signal: signal series is signal or position series, position series is signal series shift 1
+    init_cash: initial cash
+    multiplier: contract multiplier
+    c_rate: commision rate
+    blowup: whether to blow up account when cash is less than 0
+    commission_type: commission type, Percent or Absolute
+        percent: percent | pct
+        absolute: absolute | fixed | fix
+    open_price_method: first | last | average
+    contract_chg_signal: signal to change contract, series of boolean dtype
+    """
+    bid = parse_into_expr(bid)
+    ask = parse_into_expr(ask)
+    signal = parse_into_expr(signal)
+    # cast pos to signal if signal is pos
+    signal = signal.shift(-1, fill_value=0) if not is_signal else signal
+    kwargs = {
+        "init_cash": int(init_cash),
+        "multiplier": multiplier,
+        "c_rate": c_rate,
+        "blowup": blowup,
+        "commission_type": commission_type,
+        "signal_type": "absolute",
+        "open_price_method": open_price_method,
+    }
+
+    args = [signal, bid, ask]
+    if contract_chg_signal is not None:
+        args.append(parse_into_expr(contract_chg_signal))
+    return register_plugin(
+        args=args,
+        symbol="calc_tick_future_ret_full",
         is_elementwise=False,
         kwargs=kwargs,
     )
