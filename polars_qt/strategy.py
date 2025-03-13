@@ -18,6 +18,7 @@ def boll(
     *,
     # fac_vol: IntoExpr | None=None,
     rev=False,
+    zscore=True,
     delay_open: bool = True,
     long_signal: float = 1,
     short_signal: float = -1,
@@ -32,6 +33,7 @@ def boll(
     filters: long_open, long_stop, short_open, short_stop
         for open condition, if filter is False, open behavior is disabled
         for stop condition, if filter is True, return signal will be close_signal
+    zscore: whether to calculate zscore for fac
     rev: reverse the long and short signal, filters will also be reversed automatically
     delay_open: if open signal is blocked by filters, whether to delay the open signal when filters are True
     """
@@ -66,6 +68,7 @@ def boll(
     kwargs = {
         "params": params,
         "min_periods": min_periods,
+        "zscore": zscore,
         "delay_open": delay_open,
         "long_signal": float(long_signal),
         "short_signal": float(short_signal),
@@ -82,7 +85,7 @@ def boll(
 def auto_boll(
     fac: IntoExpr,
     params: tuple[int, float, float] | tuple[int, float] | int,
-    pos_map: (list[float], list[float]) | None = None,
+    pos_map: tuple[list[float], list[float]] | None = None,
     min_periods: int | None = None,
     filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
     *,
