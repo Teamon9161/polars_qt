@@ -33,6 +33,7 @@ struct ZscoreKwargs {
     min_periods: Option<usize>,
 }
 
+#[allow(clippy::unnecessary_unwrap)]
 fn calc_zscore<T>(s: &ChunkedArray<T>, min_periods: Option<usize>) -> Float64Chunked
 where
     T: PolarsNumericType,
