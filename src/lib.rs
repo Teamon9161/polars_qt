@@ -7,7 +7,7 @@ pub(crate) mod output_func;
 #[cfg(feature = "strategy")]
 mod strategy;
 
-use pyo3::types::PyModule;
+use pyo3::types::{PyModule, PyModuleMethods};
 use pyo3::{pymodule, Bound, PyResult, Python};
 
 #[pymodule]

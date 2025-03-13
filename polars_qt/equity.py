@@ -9,7 +9,11 @@ if TYPE_CHECKING:
     from polars.type_aliases import IntoExpr
 
 
-def to_trades(signal: IntoExpr, time: IntoExpr, price: IntoExpr | (IntoExpr, IntoExpr)) -> pl.Expr:
+def to_trades(
+    signal: IntoExpr,
+    time: IntoExpr,
+    price: IntoExpr | tuple[IntoExpr, IntoExpr],
+) -> pl.Expr:
     signal = parse_into_expr(signal)
     time = parse_into_expr(time)
     if isinstance(price, (tuple, list)):
@@ -21,6 +25,7 @@ def to_trades(signal: IntoExpr, time: IntoExpr, price: IntoExpr | (IntoExpr, Int
         symbol="to_trades",
         is_elementwise=False,
     )
+
 
 def calc_future_ret(
     signal: IntoExpr,
@@ -34,7 +39,7 @@ def calc_future_ret(
     slippage: float | IntoExpr = 0,
     c_rate: float = 3e-4,
     blowup: bool = False,
-    commision_type: str = "Percent",
+    commission_type: str = "Percent",
     contract_chg_signal: IntoExpr | None = None,
 ) -> pl.Expr:
     """
@@ -48,9 +53,9 @@ def calc_future_ret(
     multiplier: contract multiplier
     leverage: leverage(deprecated, will be removed in future version)
     slippage: slippage, can be a float or a series
-    c_rate: commision rate
+    c_rate: commission rate
     blowup: whether to blow up account when cash is less than 0
-    commision_type: commision type, Percent or Absolute
+    commission_type: commission type, Percent or Absolute
         percent: percent | pct
         absolute: absolute | fixed | fix
     signal_type: signal type, Percent or Absolute
@@ -68,7 +73,7 @@ def calc_future_ret(
         "leverage": leverage,
         "c_rate": c_rate,
         "blowup": blowup,
-        "commision_type": commision_type,
+        "commission_type": commission_type,
     }
     from numbers import Number
 
@@ -122,7 +127,7 @@ def calc_tick_future_ret(
     is_signal: signal series is signal or position series, position series is signal series shift 1
     init_cash: initial cash
     multiplier: contract multiplier
-    c_rate: commision rate
+    c_rate: commission rate
     blowup: whether to blow up account when cash is less than 0
     commission_type: commission type, Percent or Absolute
         percent: percent | pct
@@ -156,6 +161,7 @@ def calc_tick_future_ret(
         kwargs=kwargs,
     )
 
+
 def calc_tick_future_ret_full(
     signal: IntoExpr,
     bid: IntoExpr,
@@ -183,7 +189,7 @@ def calc_tick_future_ret_full(
     is_signal: signal series is signal or position series, position series is signal series shift 1
     init_cash: initial cash
     multiplier: contract multiplier
-    c_rate: commision rate
+    c_rate: commission rate
     blowup: whether to blow up account when cash is less than 0
     commission_type: commission type, Percent or Absolute
         percent: percent | pct

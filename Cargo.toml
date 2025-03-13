@@ -1,6 +1,6 @@
 [package]
 name = "polars-qt"
-version = "0.1.25"
+version = "0.1.26"
 edition = "2021"
 
 [lib]
@@ -14,18 +14,20 @@ strategy = []
 
 [dependencies]
 itertools = "0.13"
-pyo3 = { version = "0.21", features = ["extension-module", "abi3-py38"] }
-pyo3-polars = { version = "0.15.0", features = ["derive"] }
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py38"] }
+pyo3-polars = { version = "0.20", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
-polars = { version = "0.41", default-features = false, features = [
+polars = { version = "0.46", default-features = false, features = [
     "rolling_window",
     "temporal",
 ] }
+polars-arrow = "0.46"
 gauss-quad = "0.2.0"
-tevec = { version = "0.3", features = ["polars", "stat", "rolling"] }
+tevec = { version = "0.5", features = ["polars", "stat", "rolling", "fdiff"] }
+num-traits = "0.2"
 
 [dependencies.tea_strategy]
 git = "https://github.com/Teamon9161/tea_strategy.git"
 branch = "master"
 default-features = false
-features = ['polars']
+features = ["polars", "time"]

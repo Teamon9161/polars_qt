@@ -38,5 +38,5 @@ fn rolling_rank(inputs: &[Series], kwargs: TsRankKwargs) -> PolarsResult<Series>
             supported for rolling_rank, expected Int32, Int64, Float32, Float64.")
         }
     };
-    Ok(out.with_name(name).into_series())
+    Ok(out.with_name(name.clone()).into_series())
 }

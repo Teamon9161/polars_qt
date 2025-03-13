@@ -8,3 +8,4 @@ mod rolling_ewm;
 mod rolling_rank;
 mod tick_up_prob;
 mod to_trades;
+mod zscore;

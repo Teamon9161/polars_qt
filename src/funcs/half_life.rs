@@ -23,5 +23,5 @@ pub fn half_life(inputs: &[Series], kwargs: HalfLifeKwargs) -> PolarsResult<Seri
             supported for half_life, expected Int32, Int64, Float32, Float64."))
         }
     };
-    Ok(Series::new(name, vec![res as i32]))
+    Ok(Series::new(name.clone(), vec![res as i32]))
 }

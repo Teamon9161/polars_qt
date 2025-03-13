@@ -46,5 +46,5 @@ pub fn cut(inputs: &[Series], kwargs: CutKwargs) -> PolarsResult<Series> {
             supported for cut, expected Int32, Int64, Float32, Float64."))
         }
     };
-    Ok(res.with_name(name).into_series())
+    Ok(res.with_name(name.clone()).into_series())
 }

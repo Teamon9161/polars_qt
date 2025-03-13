@@ -48,5 +48,5 @@ fn fdiff(inputs: &[Series], kwargs: FdiffKwargs) -> PolarsResult<Series> {
             }
         }
     };
-    Ok(out.with_name(name).into_series())
+    Ok(out.with_name(name.clone()).into_series())
 }

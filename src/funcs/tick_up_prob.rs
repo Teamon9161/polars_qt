@@ -61,7 +61,7 @@ fn tick_up_prob(inputs: &[Series], kwargs: TickUpProbKwargs) -> PolarsResult<Ser
             supported for tick_up_prob, expected Int32, Int64, Float32, Float64.")
         }
     };
-    Ok(out.with_name(name).into_series())
+    Ok(out.with_name(name.clone()).into_series())
 }
 
 #[cfg(test)]

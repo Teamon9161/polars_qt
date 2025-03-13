@@ -31,6 +31,12 @@ class ExprQuantExtend:
             self.expr, window=window, min_periods=min_periods, pct=pct, rev=rev
         )
 
+    def rolling_zscore(self, window, min_periods=None) -> pl.Expr:
+        return rolling_zscore(self.expr, window=window, min_periods=min_periods)
+
+    def zscore(self, min_periods=None) -> pl.Expr:
+        return zscore(self.expr, min_periods=min_periods)
+
     def fdiff(self, d: float, window: int, min_periods=None) -> pl.Expr:
         return fdiff(self.expr, d=d, window=window, min_periods=min_periods)
 
@@ -40,7 +46,7 @@ class ExprQuantExtend:
     def cut(self, bins, labels, *, right=True, add_bounds=True):
         return cut(self.expr, bins, labels, right=right, add_bounds=add_bounds)
 
-    def compose_by(self, by, method='diff'):
+    def compose_by(self, by, method="diff"):
         return compose_by(self.expr, by, method=method)
 
     def half_life(self, min_periods=None) -> pl.Expr:

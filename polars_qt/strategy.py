@@ -13,15 +13,15 @@ if TYPE_CHECKING:
 def boll(
     fac: IntoExpr,
     params: tuple[int, float, float] | tuple[int, float] | int,
-    min_periods: int | None=None,
-    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None=None,
+    min_periods: int | None = None,
+    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
     *,
     # fac_vol: IntoExpr | None=None,
     rev=False,
-    delay_open: bool=True,
-    long_signal: float=1,
-    short_signal: float=-1,
-    close_signal: float=0,
+    delay_open: bool = True,
+    long_signal: float = 1,
+    short_signal: float = -1,
+    close_signal: float = 0,
 ) -> pl.Expr:
     """
     Bollinger Bands
@@ -39,11 +39,11 @@ def boll(
     # process params
     params, last_param = (params, None)
     if not isinstance(params, (tuple, list)):
-        params = (params, 0., 0., last_param)
+        params = (params, 0.0, 0.0, last_param)
     elif len(params) == 1:
-        params = (*params, 0., 0., last_param)
+        params = (*params, 0.0, 0.0, last_param)
     elif len(params) == 2:
-        params = (*params, 0., last_param)
+        params = (*params, 0.0, last_param)
     elif len(params) == 3:
         params = (*params, last_param)
 
@@ -51,7 +51,12 @@ def boll(
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
-        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [
+            parse_into_expr(f).cast(pl.Boolean)
+            if not isinstance(f, bool)
+            else pl.repeat(f, fac.len())
+            for f in filters
+        ]
         filters = [*filters[2:], *filters[:2]] if rev else filters
         args.extend(filters)
     else:
@@ -73,18 +78,19 @@ def boll(
         is_elementwise=False,
     )
 
+
 def auto_boll(
     fac: IntoExpr,
     params: tuple[int, float, float] | tuple[int, float] | int,
-    pos_map: (list[float], list[float]) | None=None,
-    min_periods: int | None=None,
-    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None=None,
+    pos_map: (list[float], list[float]) | None = None,
+    min_periods: int | None = None,
+    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
     *,
     rev=False,
-    delay_open: bool=True,
-    long_signal: float=1,
-    short_signal: float=-1,
-    close_signal: float=0,
+    delay_open: bool = True,
+    long_signal: float = 1,
+    short_signal: float = -1,
+    close_signal: float = 0,
 ) -> pl.Expr:
     """
     Bollinger Bands
@@ -101,17 +107,22 @@ def auto_boll(
     fac = parse_into_expr(fac)
     # process params
     if not isinstance(params, (tuple, list)):
-        params = (params, 0., 0.)
+        params = (params, 0.0, 0.0)
     elif len(params) == 1:
-        params = (*params, 0., 0.)
+        params = (*params, 0.0, 0.0)
     elif len(params) == 2:
-        params = (*params, 0.)
+        params = (*params, 0.0)
 
     # process args and filters
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
-        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [
+            parse_into_expr(f).cast(pl.Boolean)
+            if not isinstance(f, bool)
+            else pl.repeat(f, fac.len())
+            for f in filters
+        ]
         filters = [*filters[2:], *filters[:2]] if rev else filters
         args.extend(filters)
     if rev:
@@ -133,16 +144,17 @@ def auto_boll(
         is_elementwise=False,
     )
 
+
 def delay_boll(
     fac: IntoExpr,
     params: tuple[int, float, float, float] | tuple[int, float, float],
-    chase_bound: float | None=None,
-    min_periods: int | None=None,
-    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None=None,
+    chase_bound: float | None = None,
+    min_periods: int | None = None,
+    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
     *,
-    long_signal: float=1,
-    short_signal: float=-1,
-    close_signal: float=0,
+    long_signal: float = 1,
+    short_signal: float = -1,
+    close_signal: float = 0,
 ) -> pl.Expr:
     """
     Bollinger Bands but only open when fac fall back.
@@ -160,7 +172,7 @@ def delay_boll(
     # process params
     params, last_param = (params[:-1], params[-1])
     if len(params) == 2:
-        params = (*params, 0., last_param)
+        params = (*params, 0.0, last_param)
     elif len(params) == 3:
         params = (*params, last_param)
     params = (*params, chase_bound)
@@ -168,7 +180,12 @@ def delay_boll(
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
-        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [
+            parse_into_expr(f).cast(pl.Boolean)
+            if not isinstance(f, bool)
+            else pl.repeat(f, fac.len())
+            for f in filters
+        ]
         args.extend(filters)
     else:
         pass
@@ -186,78 +203,93 @@ def delay_boll(
         is_elementwise=False,
     )
 
+
 def martingale(
     close: IntoExpr,
     n: int,
     step: int | None,
     init_pos: float,
     take_profit: float,
-    filters: IntoExpr | None=None,
+    filters: IntoExpr | None = None,
     win_p_addup: float | None = None,
     pos_mul: float | None = 2,
-    b: float=1,
+    b: float = 1,
     stop_loss_m: float | None = None,
 ) -> pl.Expr:
     close = parse_into_expr(close)
     args = [close]
     if filters is not None:
-        args.extend([parse_into_expr(filters).cast(pl.Boolean), pl.repeat(True, close.len()), pl.repeat(False, close.len()), pl.repeat(False, close.len())])
+        args.extend(
+            [
+                parse_into_expr(filters).cast(pl.Boolean),
+                pl.repeat(True, close.len()),
+                pl.repeat(False, close.len()),
+                pl.repeat(False, close.len()),
+            ]
+        )
     else:
         pass
     kwargs = {
-        'n': n,
-        'step': step,
-        'init_pos': init_pos,
-        'win_p_addup': win_p_addup,
-        'pos_mul': pos_mul,
-        'take_profit': take_profit,
-        'b': b,
-        'stop_loss_m': stop_loss_m,
+        "n": n,
+        "step": step,
+        "init_pos": init_pos,
+        "win_p_addup": win_p_addup,
+        "pos_mul": pos_mul,
+        "take_profit": take_profit,
+        "b": b,
+        "stop_loss_m": stop_loss_m,
     }
     return register_plugin(
         args=args,
         kwargs=kwargs,
-        symbol='martingale',
+        symbol="martingale",
         is_elementwise=False,
     )
+
 
 def fix_time(
     fac: IntoExpr,
     n: int,
-    pos_map: tuple(list) | None,
-    filters: IntoExpr | None=None,
+    pos_map: tuple[list] | None,
+    filters: IntoExpr | None = None,
     *,
-    extend_time: bool=False,
+    extend_time: bool = False,
 ) -> pl.Expr:
     fac = parse_into_expr(fac)
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
-        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [
+            parse_into_expr(f).cast(pl.Boolean)
+            if not isinstance(f, bool)
+            else pl.repeat(f, fac.len())
+            for f in filters
+        ]
         args.extend(filters)
     kwargs = {
-        'n': n,
-        'pos_map': pos_map,
-        'extend_time': extend_time,
+        "n": n,
+        "pos_map": pos_map,
+        "extend_time": extend_time,
     }
     return register_plugin(
         args=args,
         kwargs=kwargs,
-        symbol='fix_time',
+        symbol="fix_time",
         is_elementwise=False,
     )
+
 
 def auto_tangqian(
     fac: IntoExpr,
     params: tuple[int, float, float] | tuple[int, float] | int,
-    pos_map: (list[float], list[float]) | None=None,
-    min_periods: int | None=None,
-    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None=None,
+    pos_map: (list[float], list[float]) | None = None,
+    min_periods: int | None = None,
+    filters: tuple[IntoExpr, IntoExpr, IntoExpr, IntoExpr] | None = None,
     *,
     rev=False,
-    long_signal: float=1,
-    short_signal: float=-1,
-    close_signal: float=0,
+    long_signal: float = 1,
+    short_signal: float = -1,
+    close_signal: float = 0,
 ) -> pl.Expr:
     """
     TangQian Bands Strategy
@@ -274,17 +306,22 @@ def auto_tangqian(
     fac = parse_into_expr(fac)
     # process params
     if not isinstance(params, (tuple, list)):
-        params = (params, 0., 0.)
+        params = (params, 0.0, 0.0)
     elif len(params) == 1:
-        params = (*params, 0., 0.)
+        params = (*params, 0.0, 0.0)
     elif len(params) == 2:
-        params = (*params, 0.)
+        params = (*params, 0.0)
 
     # process args and filters
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
-        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [
+            parse_into_expr(f).cast(pl.Boolean)
+            if not isinstance(f, bool)
+            else pl.repeat(f, fac.len())
+            for f in filters
+        ]
         filters = [*filters[2:], *filters[:2]] if rev else filters
         args.extend(filters)
     if rev:
@@ -305,27 +342,33 @@ def auto_tangqian(
         is_elementwise=False,
     )
 
+
 def prob_threshold(
     fac: IntoExpr,
     thresholds: (float, float, float, float),
-    per_hand = 1.,
-    max_hand = 3.,
-    filters: IntoExpr | None=None,
+    per_hand=1.0,
+    max_hand=3.0,
+    filters: IntoExpr | None = None,
 ) -> pl.Expr:
     fac = parse_into_expr(fac)
     args = [fac]
     if filters is not None:
         assert len(filters) == 4, "filters must be a list of 4 elements"
-        filters = [parse_into_expr(f).cast(pl.Boolean) if not isinstance(f, bool) else pl.repeat(f, fac.len()) for f in filters]
+        filters = [
+            parse_into_expr(f).cast(pl.Boolean)
+            if not isinstance(f, bool)
+            else pl.repeat(f, fac.len())
+            for f in filters
+        ]
         args.extend(filters)
     kwargs = {
-        'thresholds': thresholds,
-        'per_hand': float(per_hand),
-        'max_hand': float(max_hand),
+        "thresholds": thresholds,
+        "per_hand": float(per_hand),
+        "max_hand": float(max_hand),
     }
     return register_plugin(
         args=args,
         kwargs=kwargs,
-        symbol='prob_threshold',
+        symbol="prob_threshold",
         is_elementwise=False,
     )

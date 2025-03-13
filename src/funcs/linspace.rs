@@ -17,5 +17,5 @@ pub fn linspace(inputs: &[Series]) -> PolarsResult<Series> {
         end.cast(&Float64)?.f64()?.get(0).unwrap(),
         num.cast(&Int32)?.i32()?.get(0).unwrap() as usize,
     );
-    Ok(arr.with_name(name).into_series())
+    Ok(arr.with_name(name.clone()).into_series())
 }

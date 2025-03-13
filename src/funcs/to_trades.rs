@@ -34,5 +34,5 @@ pub fn to_trades(inputs: &[Series]) -> PolarsResult<Series> {
             );
         }
     };
-    Ok(trade_vec_to_series(&trades).with_name(name))
+    Ok(trade_vec_to_series(&trades).with_name(name.clone()))
 }

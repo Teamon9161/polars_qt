@@ -1,5 +1,6 @@
+use num_traits::ToPrimitive;
 use polars::prelude::*;
-use pyo3_polars::{derive::polars_expr, export::polars_core::export::num::ToPrimitive};
+use pyo3_polars::derive::polars_expr;
 
 #[polars_expr(output_type=Int32)]
 fn compose_by(inputs: &[Series]) -> PolarsResult<Series> {
@@ -31,7 +32,7 @@ where
 {
     let mut acc = 0.;
     let mut group = 0;
-    arr.apply_generic(|x| {
+    arity::unary_elementwise(arr, |x| {
         if x.is_none() {
             return Some(group);
         }
