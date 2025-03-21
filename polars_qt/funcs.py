@@ -31,6 +31,21 @@ def rolling_rank(
     )
 
 
+def rolling_kurt(expr: IntoExpr, window, min_periods=None) -> pl.Expr:
+    expr = parse_into_expr(expr)
+    if min_periods is None:
+        min_periods = window // 2
+    return register_plugin(
+        args=[expr],
+        kwargs={
+            "window": window,
+            "min_periods": min_periods,
+        },
+        symbol="rolling_kurt",
+        is_elementwise=False,
+    )
+
+
 def rolling_zscore(expr: IntoExpr, window, min_periods=None) -> pl.Expr:
     expr = parse_into_expr(expr)
     if min_periods is None:
