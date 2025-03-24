@@ -7,12 +7,14 @@ import polars_qt as pq
 
 
 def test_compose_by():
-    df = pl.DataFrame({
-        'p': [100, 101, 103, 102, 104, 102, 100, 98, 96, 95, 97, 94, 99],
-    })
+    df = pl.DataFrame(
+        {
+            "p": [100, 101, 103, 102, 104, 102, 100, 98, 96, 95, 97, 94, 99],
+        }
+    )
 
-    res = df.select(pl.col.p.qt.compose_by(3))['p']
-    res2 = df.select(pq.compose_by(pl.col.p, 3))['p']
+    res = df.select(pl.col.p.qt.compose_by(3))["p"]
+    res2 = df.select(pq.compose_by(pl.col.p, 3))["p"]
     expect = pl.Series([0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 4], dtype=pl.Int32)
     assert_series_equal(res, expect, check_names=False)
     assert_series_equal(res2, expect, check_names=False)
@@ -46,7 +48,7 @@ def test_if_then():
 def test_rolling_rank():
     df = pl.DataFrame(
         {
-            "a": [5.2, 4.1, 6.3, None, 10., 4., 5.],
+            "a": [5.2, 4.1, 6.3, None, 10.0, 4.0, 5.0],
         }
     )
     df = df.with_columns(
@@ -55,17 +57,22 @@ def test_rolling_rank():
     )
     assert_series_equal(
         df["a_rank"],
-        pl.Series([1., 0.5, 1.0, None, 1.0, 1 / 3, 2 / 3]),
+        pl.Series([1.0, 0.5, 1.0, None, 1.0, 1 / 3, 2 / 3]),
         check_names=False,
     )
     assert_series_equal(
-        df["a_rank2"], pl.Series([None, 2.0, 1., None, 1., 3., 2.]), check_names=False
+        df["a_rank2"],
+        pl.Series([None, 2.0, 1.0, None, 1.0, 3.0, 2.0]),
+        check_names=False,
     )
 
+
 def test_fdiff():
-    df = pl.DataFrame({'a': [7, 4, 2, 5, 1, 2]})
+    df = pl.DataFrame({"a": [7, 4, 2, 5, 1, 2]})
     df = df.with_columns(pl.col.a.qt.fdiff(0.5, 4))
-    assert_series_equal(df['a'], pl.Series([None, 0.5, -0.875, 3.0625, -2., 0.75]), check_names=False)
+    assert_series_equal(
+        df["a"], pl.Series([None, 0.5, -0.875, 3.0625, -2.0, 0.75]), check_names=False
+    )
 
 
 def test_linspace():
@@ -73,8 +80,10 @@ def test_linspace():
     arr = pq.linspace(-2, 19, 34, eager=True)
     assert_allclose(expect, arr.to_numpy())
 
+
 def test_cut():
     import pandas as pd
+
     arr = [1, 3, 5, 1, 5, 6, 7, 32, 1]
     bins = [2, 5, 8]
     labels = [1, 2, 3, 4]
@@ -93,26 +102,35 @@ def test_cut():
     expect = pd.cut(arr, bins, labels=labels, right=False)
     assert_allclose(res.to_numpy(), expect)
 
+
 def test_trades():
     from datetime import date
-    df = pl.DataFrame({
-        'price': [100, 101, 102, 103, 104, 105],
-        "signal": [0., 0., 1., 1., -1, -1.],
-        "time": pl.date_range(date(2020, 1, 1), date(2020, 1, 6), interval='1d', eager=True),
-    })
-    trades = df.select(trade=pl.col.signal.qt.to_trades(time='time', price='price'))
+
+    df = pl.DataFrame(
+        {
+            "price": [100, 101, 102, 103, 104, 105],
+            "signal": [0.0, 0.0, 1.0, 1.0, -1, -1.0],
+            "time": pl.date_range(
+                date(2020, 1, 1), date(2020, 1, 6), interval="1d", eager=True
+            ),
+        }
+    )
+    trades = df.select(trade=pl.col.signal.qt.to_trades(time="time", price="price"))
     assert_series_equal(
-        trades['trade'].struct['time'],
+        trades["trade"].struct["time"],
         pl.Series([date(2020, 1, 3), date(2020, 1, 5)], dtype=pl.Datetime("ns")),
-        check_names=False
+        check_names=False,
     )
 
 
 def test_rolling_ewm():
-    df = pl.DataFrame({
-        "a": [5.493, 5.325, 5.214, None, 5.123, 5.732, 5.212, 5.124],
-    })
+    df = pl.DataFrame(
+        {
+            "a": [5.493, 5.325, 5.214, None, 5.123, 5.732, 5.212, 5.124],
+        }
+    )
     window = 5
+
     def ewm(s):
         alpha = 2 / window
         n = s.count()
@@ -122,8 +140,30 @@ def test_rolling_ewm():
             return (weight * s.filter(s.is_not_null())).sum()
         else:
             return np.nan
-    df = df.with_columns([
-        pl.col.a.qt.rolling_ewm(window).alias('ewm'),
-        pl.col.a.cast(float).rolling_map(ewm, window_size=window, min_periods=2).alias('ewm2')
-    ])
-    assert_series_equal(df['ewm'], df['ewm2'], check_names=False)
+
+    df = df.with_columns(
+        [
+            pl.col.a.qt.rolling_ewm(window).alias("ewm"),
+            pl.col.a.cast(float)
+            .rolling_map(ewm, window_size=window, min_periods=2)
+            .alias("ewm2"),
+        ]
+    )
+    assert_series_equal(df["ewm"], df["ewm2"], check_names=False)
+
+
+def test_binary_pattern_vote():
+    df = pl.DataFrame({"s": [0, 1, 1, 1, 1, 1, 0, 1]})
+    df = df.with_columns(
+        [
+            pl.col.s.qt.binary_pattern_vote(
+                lookup_len=4, pattern_len=2, alpha=1, lambda_=1
+            ).alias("vote"),
+        ]
+    )
+
+    assert_series_equal(
+        df["vote"],
+        pl.Series([None, None, 1.0, 1, 1, 1, 0.5, 0.2689414213699951]),
+        check_names=False,
+    )

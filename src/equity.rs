@@ -1,3 +1,4 @@
+use crate::auto_cast;
 use polars::prelude::*;
 use pyo3_polars::derive::polars_expr;
 use tea_strategy::equity;
@@ -5,27 +6,6 @@ use tea_strategy::equity::{
     profit_vec_to_series, FutureRetKwargs, FutureRetSpreadKwargs, TickFutureRetFullKwargs,
     TickFutureRetKwargs,
 };
-
-macro_rules! auto_cast {
-    // for one expression
-    ($arm: ident ($se: expr)) => {
-        if let DataType::$arm = $se.dtype() {
-            $se.clone()
-        } else {
-            $se.cast(&DataType::$arm)?
-        }
-    };
-    // for multiple expressions
-    ($arm: ident ($($se: expr),*)) => {
-        ($(
-            if let DataType::$arm = $se.dtype() {
-                $se.clone()
-            } else {
-                $se.cast(&DataType::$arm)?
-            }
-        ),*)
-    };
-}
 
 #[polars_expr(output_type=Float64)]
 fn calc_future_ret(inputs: &[Series], kwargs: FutureRetKwargs) -> PolarsResult<Series> {

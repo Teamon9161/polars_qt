@@ -93,3 +93,6 @@ class ExprQuantExtend:
 
     def tick_up_prob(self, *args, **kwargs):
         return tick_up_prob(self.expr, *args, **kwargs)
+
+    def binary_pattern_vote(self, *args, **kwargs):
+        return binary_pattern_vote(self.expr, *args, **kwargs)

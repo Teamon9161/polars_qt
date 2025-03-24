@@ -211,3 +211,22 @@ def to_datetime(t: str | datetime) -> datetime:
         return pl.Series([t]).str.to_datetime()[0]
     else:
         return t
+
+
+def binary_pattern_vote(
+    expr: IntoExpr, lookup_len, pattern_len=None, alpha=0.9, lambda_=0.5
+) -> pl.Expr:
+    expr = parse_into_expr(expr)
+    if pattern_len is None:
+        pattern_len = lookup_len // 3
+    return register_plugin(
+        args=[expr],
+        kwargs={
+            "lookup_len": lookup_len,
+            "pattern_len": pattern_len,
+            "alpha": alpha,
+            "lambda": lambda_,
+        },
+        symbol="binary_pattern_vote",
+        is_elementwise=False,
+    )
