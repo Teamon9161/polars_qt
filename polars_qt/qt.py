@@ -31,6 +31,9 @@ class ExprQuantExtend:
             self.expr, window=window, min_periods=min_periods, pct=pct, rev=rev
         )
 
+    def rolling_skew(self, window, min_periods=None) -> pl.Expr:
+        return rolling_skew(self.expr, window=window, min_periods=min_periods)
+
     def rolling_kurt(self, window, min_periods=None) -> pl.Expr:
         return rolling_kurt(self.expr, window=window, min_periods=min_periods)
 
