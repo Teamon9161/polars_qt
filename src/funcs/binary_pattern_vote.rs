@@ -10,6 +10,7 @@ struct BinaryPatternVoteKwargs {
     pattern_len: usize,
     alpha: f64,
     lambda: f64,
+    predict_n: Option<usize>,
 }
 
 fn binary_distance(a1: &BooleanChunked, a2: &BooleanChunked, alpha: f64) -> f64 {
@@ -43,28 +44,36 @@ fn impl_binary_pattern_vote(
     pattern_len: usize,
     alpha: f64,
     lambda: f64,
+    predict_n: Option<usize>,
 ) -> PolarsResult<ChunkedArray<Float64Type>> {
-    if lookup_len < pattern_len + 1 {
-        polars_bail!(InvalidOperation:format!("lookup length: {lookup_len} must be greater than pattern length + 1: {}", pattern_len + 1))
+    let predict_n = predict_n.unwrap_or(1);
+    if lookup_len < pattern_len + predict_n {
+        polars_bail!(InvalidOperation:format!("lookup length: {lookup_len} must be greater than pattern length + predict_n: {}", pattern_len + predict_n))
     }
     use std::f64::consts::E;
     let out = arr
         .rolling_custom::<Float64Chunked, _, _>(
             lookup_len,
             |data| {
-                if data.len() < pattern_len + 1 {
+                if data.len() < pattern_len + predict_n {
                     return None;
                 }
                 let current_pattern = data.slice(-(pattern_len as i64), pattern_len);
                 debug_assert!(current_pattern.len() == pattern_len);
                 let mut up_sum = 0.;
                 let mut all_sum = 0.;
-                for i in 0..(data.len() - pattern_len) {
+                for i in 0..(data.len() - pattern_len - predict_n + 1) {
                     let past_pattern = data.slice(i as i64, pattern_len);
-                    let past_predict = data
-                        .get(i + pattern_len)
-                        .map(|v| v as i8 as f64)
-                        .unwrap_or(0.5);
+                    let past_predict = if predict_n == i {
+                        data.get(i + pattern_len)
+                            .map(|v| v as i8 as f64)
+                            .unwrap_or(0.5)
+                    } else {
+                        data.slice((i + pattern_len) as i64, predict_n)
+                            .mean()
+                            .unwrap_or(0.5)
+                    };
+
                     let dist = binary_distance(&past_pattern, &current_pattern, alpha);
                     let dist = E.powf(-lambda * dist);
                     up_sum += dist * past_predict;
@@ -96,6 +105,7 @@ pub fn binary_pattern_vote(
         kwargs.pattern_len,
         kwargs.alpha,
         kwargs.lambda,
+        kwargs.predict_n,
     )?;
     Ok(res.into_series().with_name(name.clone()))
 }

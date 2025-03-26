@@ -1,3 +1,5 @@
+mod binary_consecutive_prop;
+mod binary_pattern_vote;
 mod compose_by;
 mod cut;
 mod fdiff;
@@ -5,8 +7,6 @@ mod half_life;
 mod if_then;
 mod linspace;
 mod rolling_funcs;
-// mod rolling_rank;
-mod binary_pattern_vote;
 mod tick_up_prob;
 mod to_trades;
 mod zscore;

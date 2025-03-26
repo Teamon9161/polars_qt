@@ -214,11 +214,22 @@ def to_datetime(t: str | datetime) -> datetime:
 
 
 def binary_pattern_vote(
-    expr: IntoExpr, lookup_len, pattern_len=None, alpha=0.9, lambda_=0.5
+    expr: IntoExpr,
+    lookup_len,
+    pattern_len=None,
+    alpha=None,
+    lambda_=None,
+    predict_n=None,
 ) -> pl.Expr:
     expr = parse_into_expr(expr)
     if pattern_len is None:
         pattern_len = lookup_len // 3
+    if predict_n is None:
+        predict_n = 1
+    if alpha is None:
+        alpha = 0.9
+    if lambda_ is None:
+        lambda_ = 0.5
     return register_plugin(
         args=[expr],
         kwargs={
@@ -226,7 +237,25 @@ def binary_pattern_vote(
             "pattern_len": pattern_len,
             "alpha": alpha,
             "lambda": lambda_,
+            "predict_n": predict_n,
         },
         symbol="binary_pattern_vote",
+        is_elementwise=False,
+    )
+
+
+def binary_consecutive_prop(
+    expr: IntoExpr,
+    window: int,
+    min_periods: int | None = None,
+) -> pl.Expr:
+    expr = parse_into_expr(expr)
+    return register_plugin(
+        args=[expr],
+        kwargs={
+            "window": window,
+            "min_periods": min_periods,
+        },
+        symbol="binary_consecutive_prop",
         is_elementwise=False,
     )

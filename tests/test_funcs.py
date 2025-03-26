@@ -167,3 +167,17 @@ def test_binary_pattern_vote():
         pl.Series([None, None, 1.0, 1, 1, 1, 0.5, 0.2689414213699951]),
         check_names=False,
     )
+
+
+def test_binary_consecutive_prop():
+    df = pl.DataFrame({"s": [0, 1, 1, 1, 1, 1, 0, 1]})
+    df = df.with_columns(
+        [
+            pl.col.s.qt.binary_consecutive_prop(window=3, min_periods=1).alias("prop"),
+        ]
+    )
+    assert_series_equal(
+        df["prop"],
+        pl.Series([0.5, 0, 0.5, 1, 1, 1, 0, 0.5]),
+        check_names=False,
+    )

@@ -96,3 +96,6 @@ class ExprQuantExtend:
 
     def binary_pattern_vote(self, *args, **kwargs):
         return binary_pattern_vote(self.expr, *args, **kwargs)
+
+    def binary_consecutive_prop(self, *args, **kwargs):
+        return binary_consecutive_prop(self.expr, *args, **kwargs)
