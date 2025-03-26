@@ -44,14 +44,12 @@ fn impl_binary_consecutive_prop(
             } else {
                 None
             };
-            if let Some(v_rm) = v_rm {
-                if let Some(v_rm) = v_rm {
-                    n -= 1;
-                    if v_rm {
-                        true_count -= 1;
-                    } else {
-                        false_count -= 1;
-                    }
+            if let Some(Some(v_rm)) = v_rm {
+                n -= 1;
+                if v_rm {
+                    true_count -= 1;
+                } else {
+                    false_count -= 1;
                 }
             }
             res
