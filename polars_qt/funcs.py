@@ -204,7 +204,7 @@ def half_life(fac: IntoExpr, min_periods=None) -> pl.Expr:
 
 
 def compose_by(expr: IntoExpr, by: IntoExpr, method="diff") -> pl.Expr:
-    expr = parse_into_expr(expr)
+    expr: pl.Expr = parse_into_expr(expr)
     if method == "diff":
         expr = expr.diff()
     elif method is None:

@@ -39,9 +39,12 @@ where
         let x = x.unwrap();
         acc += x.to_f64().unwrap();
         if acc.abs() >= value {
+            let ori_group = group;
             group += 1;
             acc = 0.;
+            Some(ori_group)
+        } else {
+            Some(group)
         }
-        Some(group)
     })
 }
