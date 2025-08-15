@@ -14,18 +14,18 @@ macro_rules! auto_cast {
     // for one expression
     ($arm: ident ($se: expr)) => {
         if let polars::prelude::DataType::$arm = $se.dtype() {
-            $se.clone()
+            &$se
         } else {
-            $se.cast(&polars::prelude::DataType::$arm)?
+            &$se.cast(&polars::prelude::DataType::$arm)?
         }
     };
     // for multiple expressions
     ($arm: ident ($($se: expr),*)) => {
         ($(
             if let polars::prelude::DataType::$arm = $se.dtype() {
-                $se.clone()
+                $se
             } else {
-                $se.cast(&polars::prelude::DataType::$arm)?
+                &$se.cast(&polars::prelude::DataType::$arm)?
             }
         ),*)
     };
